@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "titleTa": "திருமண அழைப்பிதழ்",
+    "titleEn": "Wedding Invitation"
+  },
+  "couple": {
+    "bride": {
+      "tamil": "K.T. சுஸ்மிதா",
+      "english": "K.T. Susmitha",
+      "fullTamil": "K.T. சுஸ்மிதா",
+      "fullEnglish": "K.T. Susmitha",
+      "roleTa": "மணமகள்",
+      "roleEn": "The Bride",
+      "image": "/images/bride.jpg",
+      "imageAlt": "K.T. சுஸ்மிதா, the bride, in a maroon Kanjivaram silk saree with antique gold temple jewellery and jasmine garlands"
+    },
+    "groom": {
+      "tamil": "M.P. அஜய்குமார்",
+      "english": "M.P. Ajaykumar",
+      "inviteTamil": "எம்.பி. அஜய்குமார்",
+      "roleTa": "மணமகன்",
+      "roleEn": "The Groom",
+      "image": "/images/groom.jpg",
+      "imageAlt": "M.P. அஜய்குமார், the groom, in a cream silk shirt and gold-bordered veshti with angavastram"
+    }
+  },
+  "intro": {
+    "sri": "ஸ்ரீ",
+    "titleTa": "திருமண அழைப்பிதழ்",
+    "titleEn": "Wedding Invitation",
+    "ctaTa": "திறக்க தட்டவும்",
+    "ctaEn": "Touch to Open"
+  },
+  "hero": {
+    "image": "/images/home/couple.jpg",
+    "imageAlt": "Susmitha and Ajaykumar together in traditional Tamil wedding attire before a temple entrance with glowing brass lamps",
+    "titleTa": "திருமண அழைப்பிதழ்",
+    "titleEn": "Wedding Invitation",
+    "taglineTa": "ஒரு அழகான புதிய தொடக்கம்",
+    "taglineEn": "A Beautiful New Beginning",
+    "quoteTa": "இரு குடும்பங்கள்... இரு இதயங்கள்... ஒரு புதிய வாழ்க்கைப் பயணம்.",
+    "quoteEn": "Two families, two hearts, one beautiful journey.",
+    "dateTa": "15 நவம்பர் 2026",
+    "dateEn": "15 November 2026"
+  },
+  "story": {
+    "headingTa": "எங்கள் கதை",
+    "headingEn": "Our Story",
+    "introTa": "ஒரு அழகான நட்பில் தொடங்கி, ஒரு வாழ்நாள் உறவாக மலர்ந்த கதை.",
+    "introEn": "A beautiful story that began with friendship and blossomed into a lifelong partnership.",
+    "chapters": [
+      {
+        "number": "01",
+        "image": "/images/story/story-01.jpg",
+        "imageAlt": "Two South Indian families meeting at a home entrance decorated with mango leaves and glowing brass lamps",
+        "titleTa": "ஒரு அழகான நட்பின் தொடக்கம்",
+        "textTa": "இரு குடும்பங்களின் நட்பில் இந்த அழகான பயணம் தொடங்கியது.",
+        "titleEn": "The Beginning of a Beautiful Friendship",
+        "textEn": "This beautiful journey began with the friendship between two families."
+      },
+      {
+        "number": "02",
+        "image": "/images/story/story-02.jpg",
+        "imageAlt": "The couple as friends on temple stone steps at golden sunset with the gopuram glowing behind",
+        "titleTa": "ஒரு இயல்பான சந்திப்பு",
+        "textTa": "அவர்களின் பிள்ளைகளும் முதலில் நண்பர்களாகவே பழகத் தொடங்கினர்.",
+        "titleEn": "A Natural Beginning",
+        "textEn": "Their children naturally began their journey simply as friends."
+      },
+      {
+        "number": "03",
+        "image": "/images/story/story-03.jpg",
+        "imageAlt": "Elders' hands blessing a garland and invitation beside brass lamps and palm-leaf horoscopes",
+        "titleTa": "பெற்றோரின் அழகான முடிவு",
+        "textTa": "ஒரு நாள், இந்த இரு குடும்பங்களையும் திருமணத்தின் மூலம் ஒன்றாக இணைக்க பெற்றோர் முடிவு செய்தனர்.",
+        "titleEn": "A Beautiful Decision",
+        "textEn": "The families eventually imagined bringing their children together in marriage."
+      },
+      {
+        "number": "04",
+        "image": "/images/story/story-04.jpg",
+        "imageAlt": "The couple walking hand in hand through a temple corridor of carved pillars in golden light",
+        "titleTa": "நட்பிலிருந்து வாழ்க்கைத் துணையாக",
+        "textTa": "நட்பாக தொடங்கிய உறவு, வாழ்க்கைத் துணைகளாக மாறும் அழகான பயணமாகியது.",
+        "titleEn": "From Friendship to Life Partners",
+        "textEn": "What began as friendship became a beautiful journey toward becoming life partners."
+      },
+      {
+        "number": "05",
+        "image": "/images/story/story-05.jpg",
+        "imageAlt": "The couple exchanging a ring over a brass plate of flowers while family shower petals",
+        "titleTa": "ஒரு புதிய வாழ்க்கையின் தொடக்கம்",
+        "textTa": "இப்போது, இரு குடும்பங்களின் அன்புடனும் ஆசீர்வாதத்துடனும் ஒரு புதிய அத்தியாயம் தொடங்குகிறது.",
+        "titleEn": "The Beginning of a New Life",
+        "textEn": "Now, with the love and blessings of two families, a beautiful new chapter begins."
+      }
+    ]
+  },
+  "coupleSection": {
+    "headingTa": "மணமக்கள்",
+    "headingEn": "The Couple"
+  },
+  "family": {
+    "headingTa": "பெற்றோரின் ஆசீர்வாதம்",
+    "headingEn": "With the blessings of our beloved parents and family",
+    "brideSideLabelTa": "மணமகள் பெற்றோர்",
+    "brideSideLabelEn": "Bride's Parents",
+    "groomSideLabelTa": "மணமகன் பெற்றோர்",
+    "groomSideLabelEn": "Groom's Parents",
+    "ampersandEn": "&",
+    "brideParents": {
+      "fatherTa": "திரு. K.K. தியாகராஜன்",
+      "motherTa": "திருமதி. K.T. துர்கா",
+      "fatherEn": "Mr. K.K. Thiyagarajan",
+      "motherEn": "Mrs. K.T. Durga"
+    },
+    "groomParents": {
+      "fatherTa": "திரு. M.K. பிரேம்குமார்",
+      "motherTa": "திருமதி. M.P. புவனேஸ்வரி",
+      "fatherEn": "Mr. M.K. Prem Kumar",
+      "motherEn": "Mrs. M.P. Bhuvaneshwari"
+    }
+  },
+  "invitation": {
+    "sri": "ஸ்ரீ",
+    "sriEn": "Sri",
+    "titleTa": "திருமண அழைப்பிதழ்",
+    "titleEn": "Wedding Invitation",
+    "dateTa": "15 நவம்பர் 2026",
+    "dateEn": "15 November 2026",
+    "dayTa": "ஞாயிற்றுக்கிழமை",
+    "dayEn": "Sunday",
+    "timeTa": "காலை 8:30 மணி முதல் 10:00 மணி வரை",
+    "timeEn": "8:30 AM – 10:00 AM",
+    "venueTa": "புது சூரங்குடி திருமண மண்டபம்",
+    "venueEn": "Puthu Surangudi Marriage Hall",
+    "addressTa": ["27-A, வில்லாபுரம் மெயின் ரோடு,", "மதுரை – 625 012"],
+    "addressEn": ["No. 27-A, Villapuram Main Road,", "Madurai – 625 012"],
+    "labels": {
+      "date": { "ta": "தேதி", "en": "Date" },
+      "day": { "ta": "நாள்", "en": "Day" },
+      "time": { "ta": "நேரம்", "en": "Muhurtham" },
+      "venue": { "ta": "இடம்", "en": "Venue" }
+    }
+  },
+  "countdown": {
+    "headingTa": "திருமண நாளை நோக்கி...",
+    "headingEn": "Counting Down to Our Special Day",
+    "targetIso": "2026-11-15T08:30:00+05:30",
+    "targetNoteTa": "15 நவம்பர் 2026 · காலை 8:30",
+    "targetNoteEn": "15 November 2026 · 8:30 AM IST",
+    "units": [
+      { "key": "days", "ta": "நாட்கள்", "en": "DAYS" },
+      { "key": "hours", "ta": "மணி", "en": "HOURS" },
+      { "key": "minutes", "ta": "நிமிடங்கள்", "en": "MINUTES" },
+      { "key": "seconds", "ta": "விநாடிகள்", "en": "SECONDS" }
+    ]
+  },
+  "venue": {
+    "headingTa": "திருமண இடம்",
+    "headingEn": "The Venue",
+    "venueTa": "புது சூரங்குடி திருமண மண்டபம்",
+    "venueEn": "Puthu Surangudi Marriage Hall",
+    "addressTa": ["27-A, வில்லாபுரம் மெயின் ரோடு,", "மதுரை – 625 012"],
+    "addressEn": ["No. 27-A, Villapuram Main Road,", "Madurai – 625 012"],
+    "buttonTa": "இடத்தைக் காண்க",
+    "buttonEn": "View Location",
+    "mapsUrl": "https://maps.app.goo.gl/vHqe5hsDWC1PHozw8?g_st=aw"
+  },
+  "gallery": {
+    "headingTa": "புகைப்படத் தொகுப்பு",
+    "headingEn": "Photo Gallery",
+    "images": [
+      {
+        "src": "/images/gallery/01.jpg",
+        "alt": "The couple beneath a temple arch of mango leaves, marigold and jasmine, glowing with lamp light"
+      },
+      {
+        "src": "/images/gallery/02.jpg",
+        "alt": "The bride and groom smiling at each other, draped in jasmine garlands"
+      },
+      {
+        "src": "/images/gallery/03.jpg",
+        "alt": "A lit brass oil lamp surrounded by marigold flowers"
+      },
+      {
+        "src": "/images/gallery/04.jpg",
+        "alt": "A brass diya glowing among yellow flowers at the ceremony"
+      },
+      {
+        "src": "/images/gallery/05.jpg",
+        "alt": "Hands lighting a traditional brass oil lamp to begin the rituals"
+      }
+    ]
+  },
+  "music": {
+  "src": "/images/music.mp3",
+  "loop": true,
+  "labelTa": "திருமண இசை",
+  "labelPlay": "Play wedding music",
+  "labelPause": "Pause wedding music"
+},
+  "final": {
+    "headingTa": "நன்றி",
+    "headingEn": "Thank You",
+    "messageTa": "எங்கள் திருமண நாளில் தங்களின் அன்பும் ஆசீர்வாதமும் எங்களுடன் இருக்கட்டும்.",
+    "messageEn": "May your love and blessings be with us on our special day.",
+    "signoffEn": "With Love & Blessings"
+  },
+  "credit": {
+    "label": "Developed by",
+    "name": "Hariharasudhan",
+    "url": "https://hariharasudhan-portfolio-iota.vercel.app/"
+  },
+  "nav": [
+    { "id": "home", "ta": "முகப்பு", "en": "Home", "icon": "home" },
+    { "id": "story", "ta": "கதை", "en": "Story", "icon": "book" },
+    { "id": "couple", "ta": "மணமக்கள்", "en": "Couple", "icon": "heart" },
+    { "id": "invitation", "ta": "அழைப்பு", "en": "Invitation", "icon": "mail" },
+    { "id": "gallery", "ta": "புகைப்படம்", "en": "Gallery", "icon": "image" },
+    { "id": "venue", "ta": "இடம்", "en": "Venue", "icon": "map" }
+  ]
+}

@@ -1,0 +1,295 @@
+@import "tailwindcss";
+
+@theme {
+  --color-maroon: #4a0e17;
+  --color-maroon-deep: #2e0810;
+  --color-maroon-soft: #5c1521;
+  --color-maroon-velvet: #3c0b13;
+  --color-gold: #b08d3c;
+  --color-gold-deep: #86662a;
+  --color-gold-light: #d9be7c;
+  --color-gold-pale: #efe0b5;
+  --color-ivory: #f5ebdd;
+  --color-ivory-deep: #ecdfc7;
+  --color-ink: #2a1a16;
+  --color-leaf: #173a2b;
+  --color-marigold: #c77b2e;
+
+  --font-tamil: "Noto Serif Tamil", "Noto Serif", serif;
+  --font-latin: "Cormorant Garamond", Georgia, serif;
+
+  --shadow-ornate: 0 24px 60px -24px rgb(20 4 7 / 0.65);
+}
+
+/* ---------------------------------- base ---------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-maroon-deep);
+  color: var(--color-ink);
+  font-family: var(--font-latin);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: rgb(176 141 60 / 0.35);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-maroon-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-gold-deep), var(--color-gold));
+  border-radius: 8px;
+  border: 2px solid var(--color-maroon-deep);
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-deep) var(--color-maroon-deep);
+}
+
+/* ------------------------------ gold surfaces ----------------------------- */
+
+.text-gold-brush {
+  background-image: linear-gradient(
+    100deg,
+    #8a6a2a 0%,
+    #c9a34e 22%,
+    #f0dca6 50%,
+    #c9a34e 78%,
+    #8a6a2a 100%
+  );
+  background-size: 180% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gold-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    #8a6a2a 0%,
+    #c9a34e 30%,
+    #f5e8bf 50%,
+    #c9a34e 70%,
+    #8a6a2a 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-shimmer 7s ease-in-out infinite;
+}
+
+@keyframes gold-shimmer {
+  0%,
+  100% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+.hairline-gold {
+  background: linear-gradient(90deg, transparent, rgb(176 141 60 / 0.85), transparent);
+  height: 1px;
+}
+
+.gold-double-frame {
+  position: relative;
+}
+.gold-double-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgb(217 190 124 / 0.6);
+  box-shadow: inset 0 0 0 5px transparent;
+}
+.gold-double-frame::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border: 1px solid rgb(176 141 60 / 0.45);
+  z-index: 1;
+}
+
+/* ------------------------------- backgrounds ------------------------------ */
+
+.kolam-dots {
+  background-image: radial-gradient(circle, rgb(176 141 60 / 0.16) 1.1px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+
+.kolam-dots-ivory {
+  background-image: radial-gradient(circle, rgb(74 14 23 / 0.075) 1.1px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+
+.paper-texture {
+  background-color: var(--color-ivory);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 0%, #faf2e4 0%, transparent 55%),
+    linear-gradient(180deg, #f7edde 0%, #f1e4cd 100%);
+}
+
+.velvet-texture {
+  background-color: var(--color-maroon-velvet);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E"),
+    radial-gradient(140% 100% at 50% -20%, #5c1521 0%, transparent 60%),
+    radial-gradient(120% 120% at 50% 120%, #23060b 0%, transparent 55%);
+}
+
+.map-grid {
+  background-image:
+    linear-gradient(rgb(217 190 124 / 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(217 190 124 / 0.09) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* ------------------------------- animations ------------------------------- */
+
+@keyframes petal-fall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--po, 0.75);
+  }
+  92% {
+    opacity: var(--po, 0.75);
+  }
+  100% {
+    transform: translate3d(var(--dx, 4rem), 112vh, 0) rotate(var(--rot, 300deg));
+    opacity: 0;
+  }
+}
+
+.petal {
+  position: absolute;
+  top: 0;
+  border-radius: 120% 8% 120% 8%;
+  background: radial-gradient(circle at 32% 28%, #fffaf0, #efe2c8 70%, #e6d6b4);
+  box-shadow: inset -1px -1px 2px rgb(176 141 60 / 0.25);
+  animation: petal-fall var(--dur, 16s) linear var(--delay, 0s) infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.petal--marigold {
+  border-radius: 100% 14% 100% 14%;
+  background: radial-gradient(circle at 35% 30%, #e9b160, #c77b2e 75%, #a25a14);
+  box-shadow: none;
+}
+
+@keyframes eq-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-bar {
+  transform-origin: center;
+  animation: eq-bar 1s ease-in-out infinite;
+}
+
+@keyframes ring-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(217 190 124 / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 26px rgb(217 190 124 / 0);
+  }
+}
+.cta-pulse {
+  animation: ring-pulse 2.4s ease-out infinite;
+}
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.12) translateY(-1px);
+  }
+}
+.flame {
+  transform-origin: 50% 100%;
+  animation: flame-flicker 1.6s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spin-slow 16s linear infinite;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petal,
+  .eq-bar,
+  .cta-pulse,
+  .flame,
+  .spin-slow,
+  .float-soft,
+  .text-gold-shimmer {
+    animation: none !important;
+  }
+  .petal {
+    display: none;
+  }
+}
