@@ -168,31 +168,31 @@
     "mapsUrl": "https://maps.app.goo.gl/vHqe5hsDWC1PHozw8?g_st=aw"
   },
   "gallery": {
-    "headingTa": "புகைப்படத் தொகுப்பு",
-    "headingEn": "Photo Gallery",
-    "images": [
-      {
-        "src": "/images/gallery/01.jpg",
-        "alt": "The couple beneath a temple arch of mango leaves, marigold and jasmine, glowing with lamp light"
-      },
-      {
-        "src": "/images/gallery/02.jpg",
-        "alt": "The bride and groom smiling at each other, draped in jasmine garlands"
-      },
-      {
-        "src": "/images/gallery/03.jpg",
-        "alt": "A lit brass oil lamp surrounded by marigold flowers"
-      },
-      {
-        "src": "/images/gallery/04.jpg",
-        "alt": "A brass diya glowing among yellow flowers at the ceremony"
-      },
-      {
-        "src": "/images/gallery/05.jpg",
-        "alt": "Hands lighting a traditional brass oil lamp to begin the rituals"
-      }
-    ]
-  },
+  "headingTa": "புகைப்படத் தொகுப்பு",
+  "headingEn": "Photo Gallery",
+  "images": [
+    {
+      "src": "/images/gallery/01.jpg",
+      "alt": "Two hearts, one beautiful journey, and a lifetime of togetherness."
+    },
+    {
+      "src": "/images/gallery/02.jpg",
+      "alt": "In your eyes, I found my forever."
+    },
+    {
+      "src": "/images/gallery/03.jpg",
+      "alt": "May our love shine brighter with every passing day."
+    },
+    {
+      "src": "/images/gallery/04.jpg",
+      "alt": "Two souls, one love, one beautiful forever."
+    },
+    {
+      "src": "/images/gallery/05.jpg",
+      "alt": "With love in our hearts, we begin our forever together."
+    }
+  ]
+},
   "music": {
   "src": "/images/music.mp3",
   "loop": true,
