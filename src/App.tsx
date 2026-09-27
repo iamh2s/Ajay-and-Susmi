@@ -103,13 +103,15 @@ export default function App() {
             SEPARATE CONTACT CARD
         ================================================= */}
 
-        <ContactCard />
+       
 
         <CountdownSection />
 
         <GallerySection />
 
         <VenueSection />
+
+        <ContactCard />
 
         <FinalSection />
       </main>
