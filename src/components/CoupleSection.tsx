@@ -94,7 +94,7 @@ export default function CoupleSection() {
             imageAlt={couple.bride.imageAlt}
             roleTa={couple.bride.roleTa}
             roleEn={couple.bride.roleEn}
-            nameTa={couple.bride.fullTamil}
+            nameTa="சுஷ்மிதா"
             nameEn={couple.bride.fullEnglish}
             delay={0.05}
           />
