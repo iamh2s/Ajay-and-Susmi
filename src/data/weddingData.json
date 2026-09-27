@@ -134,13 +134,31 @@
     "timeEn": "8:30 AM – 10:00 AM",
     "venueTa": "புது சூரங்குடி திருமண மண்டபம்",
     "venueEn": "Puthu Surangudi Marriage Hall",
-    "addressTa": ["27-A, வில்லாபுரம் மெயின் ரோடு,", "மதுரை – 625 012"],
-    "addressEn": ["No. 27-A, Villapuram Main Road,", "Madurai – 625 012"],
+    "addressTa": [
+      "27-A, வில்லாபுரம் மெயின் ரோடு,",
+      "மதுரை – 625 012"
+    ],
+    "addressEn": [
+      "No. 27-A, Villapuram Main Road,",
+      "Madurai – 625 012"
+    ],
     "labels": {
-      "date": { "ta": "தேதி", "en": "Date" },
-      "day": { "ta": "நாள்", "en": "Day" },
-      "time": { "ta": "நேரம்", "en": "Muhurtham" },
-      "venue": { "ta": "இடம்", "en": "Venue" }
+      "date": {
+        "ta": "தேதி",
+        "en": "Date"
+      },
+      "day": {
+        "ta": "நாள்",
+        "en": "Day"
+      },
+      "time": {
+        "ta": "நேரம்",
+        "en": "Muhurtham"
+      },
+      "venue": {
+        "ta": "இடம்",
+        "en": "Venue"
+      }
     }
   },
   "countdown": {
@@ -150,10 +168,26 @@
     "targetNoteTa": "15 நவம்பர் 2026 · காலை 8:30",
     "targetNoteEn": "15 November 2026 · 8:30 AM IST",
     "units": [
-      { "key": "days", "ta": "நாட்கள்", "en": "DAYS" },
-      { "key": "hours", "ta": "மணி", "en": "HOURS" },
-      { "key": "minutes", "ta": "நிமிடங்கள்", "en": "MINUTES" },
-      { "key": "seconds", "ta": "விநாடிகள்", "en": "SECONDS" }
+      {
+        "key": "days",
+        "ta": "நாட்கள்",
+        "en": "DAYS"
+      },
+      {
+        "key": "hours",
+        "ta": "மணி",
+        "en": "HOURS"
+      },
+      {
+        "key": "minutes",
+        "ta": "நிமிடங்கள்",
+        "en": "MINUTES"
+      },
+      {
+        "key": "seconds",
+        "ta": "விநாடிகள்",
+        "en": "SECONDS"
+      }
     ]
   },
   "venue": {
@@ -161,45 +195,51 @@
     "headingEn": "The Venue",
     "venueTa": "புது சூரங்குடி திருமண மண்டபம்",
     "venueEn": "Puthu Surangudi Marriage Hall",
-    "addressTa": ["27-A, வில்லாபுரம் மெயின் ரோடு,", "மதுரை – 625 012"],
-    "addressEn": ["No. 27-A, Villapuram Main Road,", "Madurai – 625 012"],
+    "addressTa": [
+      "27-A, வில்லாபுரம் மெயின் ரோடு,",
+      "மதுரை – 625 012"
+    ],
+    "addressEn": [
+      "No. 27-A, Villapuram Main Road,",
+      "Madurai – 625 012"
+    ],
     "buttonTa": "இடத்தைக் காண்க",
     "buttonEn": "View Location",
     "mapsUrl": "https://maps.app.goo.gl/vHqe5hsDWC1PHozw8?g_st=aw"
   },
   "gallery": {
-  "headingTa": "புகைப்படத் தொகுப்பு",
-  "headingEn": "Photo Gallery",
-  "images": [
-    {
-      "src": "/images/gallery/01.jpg",
-      "alt": "Two hearts, one beautiful journey, and a lifetime of togetherness."
-    },
-    {
-      "src": "/images/gallery/02.jpg",
-      "alt": "In your eyes, I found my forever."
-    },
-    {
-      "src": "/images/gallery/03.jpg",
-      "alt": "May our love shine brighter with every passing day."
-    },
-    {
-      "src": "/images/gallery/04.jpg",
-      "alt": "Two souls, one love, one beautiful forever."
-    },
-    {
-      "src": "/images/gallery/05.jpg",
-      "alt": "With love in our hearts, we begin our forever together."
-    }
-  ]
-},
+    "headingTa": "புகைப்படத் தொகுப்பு",
+    "headingEn": "Photo Gallery",
+    "images": [
+      {
+        "src": "/images/gallery/01.jpg",
+        "alt": "Two hearts, one beautiful journey, and a lifetime of togetherness."
+      },
+      {
+        "src": "/images/gallery/02.jpg",
+        "alt": "In your eyes, I found my forever."
+      },
+      {
+        "src": "/images/gallery/03.jpg",
+        "alt": "May our love shine brighter with every passing day."
+      },
+      {
+        "src": "/images/gallery/04.jpg",
+        "alt": "Two souls, one love, one beautiful forever."
+      },
+      {
+        "src": "/images/gallery/05.jpg",
+        "alt": "With love in our hearts, we begin our forever together."
+      }
+    ]
+  },
   "music": {
-  "src": "/images/music.mp3",
-  "loop": true,
-  "labelTa": "திருமண இசை",
-  "labelPlay": "Play wedding music",
-  "labelPause": "Pause wedding music"
-},
+    "src": "/images/music.mp3",
+    "loop": true,
+    "labelTa": "திருமண இசை",
+    "labelPlay": "Play wedding music",
+    "labelPause": "Pause wedding music"
+  },
   "final": {
     "headingTa": "நன்றி",
     "headingEn": "Thank You",
@@ -213,11 +253,47 @@
     "url": "https://hariharasudhan-portfolio-iota.vercel.app/"
   },
   "nav": [
-    { "id": "home", "ta": "முகப்பு", "en": "Home", "icon": "home" },
-    { "id": "story", "ta": "கதை", "en": "Story", "icon": "book" },
-    { "id": "couple", "ta": "மணமக்கள்", "en": "Couple", "icon": "heart" },
-    { "id": "invitation", "ta": "அழைப்பு", "en": "Invitation", "icon": "mail" },
-    { "id": "gallery", "ta": "புகைப்படம்", "en": "Gallery", "icon": "image" },
-    { "id": "venue", "ta": "இடம்", "en": "Venue", "icon": "map" }
+    {
+      "id": "home",
+      "ta": "முகப்பு",
+      "en": "Home",
+      "icon": "home"
+    },
+    {
+      "id": "story",
+      "ta": "கதை",
+      "en": "Story",
+      "icon": "book"
+    },
+    {
+      "id": "couple",
+      "ta": "மணமக்கள்",
+      "en": "Couple",
+      "icon": "heart"
+    },
+    {
+      "id": "invitation",
+      "ta": "அழைப்பு",
+      "en": "Invitation",
+      "icon": "mail"
+    },
+    {
+      "id": "gallery",
+      "ta": "புகைப்படம்",
+      "en": "Gallery",
+      "icon": "image"
+    },
+    {
+      "id": "venue",
+      "ta": "இடம்",
+      "en": "Venue",
+      "icon": "map"
+    },
+    {
+      "id": "contact",
+      "ta": "தொடர்பு",
+      "en": "Contact",
+      "icon": "phone"
+    }
   ]
 }

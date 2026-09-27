@@ -31,7 +31,7 @@ export default function CountdownSection() {
   return (
     <section
       aria-label={`${countdown.headingTa} — ${countdown.headingEn}`}
-      className="velvet-texture relative overflow-hidden py-24 sm:py-28"
+      className="velvet-texture relative overflow-hidden py-24 sm:py-28 mt-15"
     >
       <div aria-hidden="true" className="kolam-dots absolute inset-0 opacity-40" />
       <div

@@ -19,22 +19,17 @@ import SideNavigation from "./components/SideNavigation";
 import StorySection from "./components/StorySection";
 import VenueSection from "./components/VenueSection";
 
+/* IMPORTANT */
+import ContactCard from "./components/ContactCard";
+
 import { SvgDefs } from "./components/decor";
 
 export default function App() {
   const [opened, setOpened] = useState(false);
 
-  /*
-   * =========================================================
-   * USER TAPS "TOUCH TO OPEN"
-   * =========================================================
-   *
-   * This function is called directly from the button's
-   * onClick event.
-   *
-   * MusicPlayer receives this event and calls audio.play()
-   * while the browser still considers it a user interaction.
-   */
+  /* =========================================================
+     USER TAPS "TOUCH TO OPEN"
+  ========================================================= */
 
   const handleOpenStart = useCallback(() => {
     window.dispatchEvent(
@@ -42,21 +37,17 @@ export default function App() {
     );
   }, []);
 
-  /*
-   * =========================================================
-   * DOOR ANIMATION FINISHED
-   * =========================================================
-   */
+  /* =========================================================
+     DOOR ANIMATION FINISHED
+  ========================================================= */
 
   const handleOpened = useCallback(() => {
     setOpened(true);
   }, []);
 
-  /*
-   * =========================================================
-   * SCROLL LOCK
-   * =========================================================
-   */
+  /* =========================================================
+     SCROLL LOCK
+  ========================================================= */
 
   useEffect(() => {
     document.documentElement.classList.toggle(
@@ -80,7 +71,7 @@ export default function App() {
       <SvgDefs />
 
       {/* =====================================================
-          INTRO
+          INTRO / TOUCH TO OPEN
       ===================================================== */}
 
       <AnimatePresence>
@@ -108,6 +99,12 @@ export default function App() {
 
         <InvitationSection />
 
+        {/* =================================================
+            SEPARATE CONTACT CARD
+        ================================================= */}
+
+        <ContactCard />
+
         <CountdownSection />
 
         <GallerySection />
@@ -120,15 +117,6 @@ export default function App() {
       {/* =====================================================
           MUSIC
       ===================================================== */}
-
-      {/*
-       * IMPORTANT:
-       *
-       * MusicPlayer is mounted from the beginning.
-       *
-       * This is required because the audio element needs
-       * to already exist when the user taps "Touch to Open".
-       */}
 
       <MusicPlayer opened={opened} />
 
