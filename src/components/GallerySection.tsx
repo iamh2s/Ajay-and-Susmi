@@ -4,14 +4,12 @@ import {
   useState,
 } from "react";
 
-
-
-import { gsap, ScrollTrigger } from "../lib/gsap";
+import { Heart } from "lucide-react";
+import { gsap } from "../lib/gsap";
 
 import data from "@/data/weddingData.json";
 
 import { GoldDivider } from "./decor";
-
 import { cn } from "@/utils/cn";
 
 type GalleryImage = {
@@ -90,16 +88,9 @@ function FilmFrame({
           md:p-3
         "
       >
-        {/* =================================================
-            IMAGE
-        ================================================== */}
+        {/* IMAGE */}
 
-        <div
-          className="
-            relative
-            overflow-hidden
-          "
-        >
+        <div className="relative overflow-hidden">
           <div
             className={cn(
               "relative overflow-hidden",
@@ -113,22 +104,19 @@ function FilmFrame({
               alt={image.alt}
               loading={index < 2 ? "eager" : "lazy"}
               decoding="async"
-              fetchPriority={
-                index < 2 ? "high" : "auto"
-              }
+              fetchPriority={index < 2 ? "high" : "auto"}
               draggable={false}
               className="
+                block
                 h-full
                 w-full
+                select-none
                 object-cover
                 transform-gpu
-                select-none
               "
             />
 
-            {/* =================================================
-                CINEMATIC GRADIENT
-            ================================================== */}
+            {/* CINEMATIC GRADIENT */}
 
             <span
               aria-hidden="true"
@@ -143,9 +131,7 @@ function FilmFrame({
               "
             />
 
-            {/* =================================================
-                SUBTLE VIGNETTE
-            ================================================== */}
+            {/* VIGNETTE */}
 
             <span
               aria-hidden="true"
@@ -156,25 +142,9 @@ function FilmFrame({
                 shadow-[inset_0_0_70px_rgba(0,0,0,0.4)]
               "
             />
-
-            {/* =================================================
-                GOLD TINT
-            ================================================== */}
-
-            <span
-              aria-hidden="true"
-              className="
-                pointer-events-none
-                absolute
-                inset-0
-                bg-[#d8ad55]/0
-              "
-            />
           </div>
 
-          {/* =================================================
-              IMAGE NUMBER
-          ================================================== */}
+          {/* IMAGE NUMBER */}
 
           <span
             className="
@@ -201,9 +171,7 @@ function FilmFrame({
           </span>
         </div>
 
-        {/* =================================================
-            CAPTION
-        ================================================== */}
+        {/* CAPTION */}
 
         <figcaption className="flex items-center justify-between gap-4 px-1.5 pt-3 sm:px-2 sm:pt-3.5">
           <p className="min-w-0 truncate font-latin text-xs italic text-[#f7ead7]/85 sm:text-sm">
@@ -234,7 +202,7 @@ export default function GallerySection() {
   const [extra, setExtra] = useState(0);
 
   /* =======================================================
-     MEASURE TRACK
+     MEASURE HORIZONTAL DISTANCE
   ======================================================= */
 
   useLayoutEffect(() => {
@@ -242,43 +210,56 @@ export default function GallerySection() {
 
     if (!element) return;
 
-    let frame = 0;
+    let animationFrame = 0;
 
     const measure = () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(animationFrame);
 
-      frame = requestAnimationFrame(() => {
-        if (!track.current) return;
+      animationFrame = requestAnimationFrame(() => {
+        const trackElement = track.current;
 
-        const distance = Math.max(
-          0,
-          track.current.scrollWidth -
-            window.innerWidth
-        );
+        if (!trackElement) return;
+
+        const width = trackElement.scrollWidth;
+        const viewport = window.innerWidth;
+
+        const distance = Math.max(0, width - viewport);
 
         setExtra((previous) =>
-          previous === distance
+          Math.abs(previous - distance) < 1
             ? previous
             : distance
         );
       });
     };
 
+    /* Initial measurement */
     measure();
 
-    const resizeObserver =
-      new ResizeObserver(measure);
+    /* Observe track size changes */
+    const resizeObserver = new ResizeObserver(() => {
+      measure();
+    });
 
     resizeObserver.observe(element);
 
-    window.addEventListener(
-      "resize",
-      measure,
-      { passive: true }
-    );
+    /* Window resize */
+    window.addEventListener("resize", measure, {
+      passive: true,
+    });
+
+    /* Image loading can change the track width */
+    const imageElements =
+      element.querySelectorAll("img");
+
+    imageElements.forEach((image) => {
+      if (!image.complete) {
+        image.addEventListener("load", measure);
+      }
+    });
 
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(animationFrame);
 
       resizeObserver.disconnect();
 
@@ -286,6 +267,10 @@ export default function GallerySection() {
         "resize",
         measure
       );
+
+      imageElements.forEach((image) => {
+        image.removeEventListener("load", measure);
+      });
     };
   }, [images.length]);
 
@@ -306,7 +291,7 @@ export default function GallerySection() {
 
       /* =================================================
          DESKTOP
-      ================================================= */
+      ================================================== */
 
       mm.add(
         "(min-width: 1024px)",
@@ -331,6 +316,8 @@ export default function GallerySection() {
 
               scrub: 0.7,
 
+              pin: false,
+
               invalidateOnRefresh: true,
 
               anticipatePin: 1,
@@ -343,7 +330,7 @@ export default function GallerySection() {
 
       /* =================================================
          TABLET
-      ================================================= */
+      ================================================== */
 
       mm.add(
         "(min-width: 640px) and (max-width: 1023px)",
@@ -368,9 +355,13 @@ export default function GallerySection() {
 
               scrub: 0.55,
 
+              pin: false,
+
               invalidateOnRefresh: true,
 
               anticipatePin: 1,
+
+              fastScrollEnd: true,
             },
           });
         }
@@ -378,7 +369,7 @@ export default function GallerySection() {
 
       /* =================================================
          MOBILE
-      ================================================= */
+      ================================================== */
 
       mm.add(
         "(max-width: 639px)",
@@ -403,6 +394,8 @@ export default function GallerySection() {
 
               scrub: 0.35,
 
+              pin: false,
+
               invalidateOnRefresh: true,
 
               anticipatePin: 1,
@@ -420,6 +413,30 @@ export default function GallerySection() {
 
     return () => {
       ctx.revert();
+    };
+  }, [extra]);
+
+  /* =======================================================
+     REFRESH SCROLLTRIGGER AFTER DISTANCE CHANGES
+  ======================================================= */
+
+  useLayoutEffect(() => {
+    if (extra <= 0) return;
+
+    const refresh = () => {
+      requestAnimationFrame(() => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new Event("resize")
+          );
+        }
+      });
+    };
+
+    refresh();
+
+    return () => {
+      /* Nothing required */
     };
   }, [extra]);
 
@@ -653,7 +670,6 @@ export default function GallerySection() {
               "
             >
               Keep scrolling Down to Explore all images ↓
-
             </div>
           </div>
 
@@ -701,14 +717,16 @@ export default function GallerySection() {
                 text-[#f7ead7]/70
               "
             >
-              And the most beautiful
+              And the most beautiful{" "}
 
               <Heart
+                aria-hidden="true"
                 className="
                   mx-2
-                  inline
+                  inline-block
                   h-5
                   w-5
+                  translate-y-[2px]
                   text-[#d8ad55]
                 "
                 strokeWidth={1.3}
