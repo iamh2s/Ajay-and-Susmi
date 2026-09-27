@@ -1,27 +1,16 @@
 import {
-  useCallback,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
-
-import {
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  MoveRight,
-  X,
-} from "lucide-react";
+import { Heart, MoveRight } from "lucide-react";
 
 import { gsap, ScrollTrigger } from "../lib/gsap";
 
 import data from "@/data/weddingData.json";
 
-import {
-  GoldDivider,
-} from "./decor";
+import { GoldDivider } from "./decor";
 
 import { cn } from "@/utils/cn";
 
@@ -68,19 +57,17 @@ function FilmFrame({
   image,
   index,
   total,
-  onOpen,
 }: {
   image: GalleryImage;
   index: number;
   total: number;
-  onOpen: () => void;
 }) {
   const tall = index % 3 === 1;
 
   return (
     <figure
       className={cn(
-        "group relative shrink-0",
+        "relative shrink-0",
         "w-[78vw]",
         "sm:w-[62vw]",
         "md:w-[47vw]",
@@ -107,17 +94,10 @@ function FilmFrame({
             IMAGE
         ================================================== */}
 
-        <button
-          type="button"
-          onClick={onOpen}
-          aria-label={`Open photo ${index + 1}: ${image.alt}`}
+        <div
           className="
             relative
-            block
-            w-full
             overflow-hidden
-            text-left
-            focus:outline-none
           "
         >
           <div
@@ -133,7 +113,10 @@ function FilmFrame({
               alt={image.alt}
               loading={index < 2 ? "eager" : "lazy"}
               decoding="async"
-              fetchPriority={index < 2 ? "high" : "auto"}
+              fetchPriority={
+                index < 2 ? "high" : "auto"
+              }
+              draggable={false}
               className="
                 h-full
                 w-full
@@ -143,7 +126,9 @@ function FilmFrame({
               "
             />
 
-            {/* cinematic gradient */}
+            {/* =================================================
+                CINEMATIC GRADIENT
+            ================================================== */}
 
             <span
               aria-hidden="true"
@@ -158,7 +143,9 @@ function FilmFrame({
               "
             />
 
-            {/* subtle vignette */}
+            {/* =================================================
+                SUBTLE VIGNETTE
+            ================================================== */}
 
             <span
               aria-hidden="true"
@@ -170,7 +157,9 @@ function FilmFrame({
               "
             />
 
-            {/* gold tint */}
+            {/* =================================================
+                GOLD TINT
+            ================================================== */}
 
             <span
               aria-hidden="true"
@@ -184,11 +173,12 @@ function FilmFrame({
           </div>
 
           {/* =================================================
-              NUMBER
+              IMAGE NUMBER
           ================================================== */}
 
           <span
             className="
+              pointer-events-none
               absolute
               right-2.5
               top-2.5
@@ -209,7 +199,7 @@ function FilmFrame({
             {String(index + 1).padStart(2, "0")} /{" "}
             {String(total).padStart(2, "0")}
           </span>
-        </button>
+        </div>
 
         {/* =================================================
             CAPTION
@@ -230,261 +220,6 @@ function FilmFrame({
 }
 
 /* =========================================================
-   LIGHTBOX
-========================================================= */
-
-function GalleryLightbox({
-  images,
-  index,
-  onClose,
-  onNavigate,
-}: {
-  images: GalleryImage[];
-  index: number;
-  onClose: () => void;
-  onNavigate: (direction: 1 | -1) => void;
-}) {
-  const current = images[index];
-
-  useLayoutEffect(() => {
-    document.documentElement.classList.add("scroll-locked");
-
-    const handleKeyboard = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-
-      if (event.key === "ArrowLeft") {
-        onNavigate(-1);
-      }
-
-      if (event.key === "ArrowRight") {
-        onNavigate(1);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyboard);
-
-    return () => {
-      document.documentElement.classList.remove("scroll-locked");
-      window.removeEventListener("keydown", handleKeyboard);
-    };
-  }, [onClose, onNavigate]);
-
-  return (
-    <motion.div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Photo viewer"
-      className="
-        fixed
-        inset-0
-        z-[100]
-        flex
-        items-center
-        justify-center
-        overflow-hidden
-        bg-[#100307]/95
-        p-4
-        backdrop-blur-lg
-        sm:p-8
-      "
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      onClick={onClose}
-    >
-      {/* blurred background */}
-
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          bg-cover
-          bg-center
-          opacity-[0.13]
-          blur-2xl
-        "
-        style={{
-          backgroundImage: `url(${current.src})`,
-        }}
-      />
-
-      {/* cinema bars */}
-
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[6vh] bg-black/60" />
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[6vh] bg-black/60" />
-
-      {/* close */}
-
-      <button
-        type="button"
-        aria-label="Close photo viewer"
-        onClick={onClose}
-        className="
-          absolute
-          right-4
-          top-4
-          z-30
-          flex
-          h-11
-          w-11
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-[#d8ad55]/50
-          bg-[#17060b]/80
-          text-[#f0d38a]
-          backdrop-blur-md
-          transition
-          hover:bg-[#17060b]
-          sm:right-6
-          sm:top-6
-        "
-      >
-        <X className="h-5 w-5" />
-      </button>
-
-      {/* previous */}
-
-      <button
-        type="button"
-        aria-label="Previous photo"
-        onClick={(event) => {
-          event.stopPropagation();
-          onNavigate(-1);
-        }}
-        className="
-          absolute
-          left-2
-          top-1/2
-          z-30
-          flex
-          h-10
-          w-10
-          -translate-y-1/2
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-[#d8ad55]/50
-          bg-[#17060b]/75
-          text-[#f0d38a]
-          backdrop-blur-md
-          sm:left-6
-          sm:h-11
-          sm:w-11
-        "
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-
-      {/* next */}
-
-      <button
-        type="button"
-        aria-label="Next photo"
-        onClick={(event) => {
-          event.stopPropagation();
-          onNavigate(1);
-        }}
-        className="
-          absolute
-          right-2
-          top-1/2
-          z-30
-          flex
-          h-10
-          w-10
-          -translate-y-1/2
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-[#d8ad55]/50
-          bg-[#17060b]/75
-          text-[#f0d38a]
-          backdrop-blur-md
-          sm:right-6
-          sm:h-11
-          sm:w-11
-        "
-      >
-        <ChevronRight className="h-5 w-5" />
-      </button>
-
-      {/* image */}
-
-      <AnimatePresence mode="wait">
-        <motion.figure
-          key={current.src}
-          initial={{
-            opacity: 0,
-            scale: 0.96,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          exit={{
-            opacity: 0,
-            scale: 0.98,
-          }}
-          transition={{
-            duration: 0.35,
-          }}
-          className="
-            relative
-            z-20
-            max-w-[88vw]
-          "
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div
-            className="
-              border
-              border-[#d8ad55]/60
-              bg-[#16070b]
-              p-2
-              shadow-[0_30px_80px_rgba(0,0,0,0.75)]
-              sm:p-3
-            "
-          >
-            <img
-              src={current.src}
-              alt={current.alt}
-              draggable={false}
-              className="
-                block
-                max-h-[72svh]
-                max-w-[82vw]
-                object-contain
-              "
-            />
-          </div>
-
-          <figcaption className="mt-3 text-center sm:mt-4">
-            <p className="font-latin text-xs italic text-[#f7ead7]/90 sm:text-sm">
-              {current.alt}
-            </p>
-
-            <p className="mt-1.5 font-latin text-[8px] uppercase tracking-[0.35em] text-[#d8ad55]/70">
-              {String(index + 1).padStart(2, "0")} /{" "}
-              {String(images.length).padStart(2, "0")}
-            </p>
-          </figcaption>
-        </motion.figure>
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-/* =========================================================
    MAIN GALLERY
 ========================================================= */
 
@@ -498,11 +233,8 @@ export default function GallerySection() {
 
   const [extra, setExtra] = useState(0);
 
-  const [lightbox, setLightbox] =
-    useState<number | null>(null);
-
   /* =======================================================
-     MEASURE WITH RESIZE OBSERVER
+     MEASURE TRACK
   ======================================================= */
 
   useLayoutEffect(() => {
@@ -520,7 +252,8 @@ export default function GallerySection() {
 
         const distance = Math.max(
           0,
-          track.current.scrollWidth - window.innerWidth
+          track.current.scrollWidth -
+            window.innerWidth
         );
 
         setExtra((previous) =>
@@ -557,7 +290,7 @@ export default function GallerySection() {
   }, [images.length]);
 
   /* =======================================================
-     GSAP SCROLL
+     GSAP HORIZONTAL SCROLL
   ======================================================= */
 
   useLayoutEffect(() => {
@@ -571,9 +304,9 @@ export default function GallerySection() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      /* ===============================================
+      /* =================================================
          DESKTOP
-      ================================================ */
+      ================================================= */
 
       mm.add(
         "(min-width: 1024px)",
@@ -608,9 +341,9 @@ export default function GallerySection() {
         }
       );
 
-      /* ===============================================
+      /* =================================================
          TABLET
-      ================================================ */
+      ================================================= */
 
       mm.add(
         "(min-width: 640px) and (max-width: 1023px)",
@@ -643,9 +376,9 @@ export default function GallerySection() {
         }
       );
 
-      /* ===============================================
+      /* =================================================
          MOBILE
-      ================================================ */
+      ================================================= */
 
       mm.add(
         "(max-width: 639px)",
@@ -691,28 +424,6 @@ export default function GallerySection() {
   }, [extra]);
 
   /* =======================================================
-     LIGHTBOX
-  ======================================================= */
-
-  const navigateLightbox = useCallback(
-    (direction: 1 | -1) => {
-      setLightbox((current) => {
-        if (current === null) {
-          return null;
-        }
-
-        return (
-          (current +
-            direction +
-            images.length) %
-          images.length
-        );
-      });
-    },
-    [images.length]
-  );
-
-  /* =======================================================
      SECTION HEIGHT
   ======================================================= */
 
@@ -721,6 +432,10 @@ export default function GallerySection() {
       ? `calc(100svh + ${extra + 180}px)`
       : "100svh";
 
+  /* =======================================================
+     RENDER
+  ======================================================= */
+
   return (
     <section
       id="gallery"
@@ -728,16 +443,16 @@ export default function GallerySection() {
       aria-label={`${gallery.headingTa} — ${gallery.headingEn}`}
       className="
         relative
-        bg-[#13070a]
         overflow-clip
+        bg-[#13070a]
       "
       style={{
         height: sectionHeight,
       }}
     >
-      {/* ===================================================
+      {/* =================================================
           STICKY CINEMA
-      =================================================== */}
+      ================================================= */}
 
       <div
         className="
@@ -750,7 +465,7 @@ export default function GallerySection() {
           overflow-hidden
         "
       >
-        {/* ================================================
+        {/* =================================================
             TOP FILM BAND
         ================================================= */}
 
@@ -774,7 +489,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* ================================================
+        {/* =================================================
             BOTTOM FILM BAND
         ================================================= */}
 
@@ -798,8 +513,8 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* ================================================
-            BACKGROUND
+        {/* =================================================
+            BACKGROUND GLOW
         ================================================= */}
 
         <div
@@ -830,7 +545,7 @@ export default function GallerySection() {
           }}
         />
 
-        {/* ================================================
+        {/* =================================================
             FILM TRACK
         ================================================= */}
 
@@ -854,9 +569,9 @@ export default function GallerySection() {
             lg:gap-16
           "
         >
-          {/* ==============================================
+          {/* =================================================
               INTRO
-          =============================================== */}
+          ================================================= */}
 
           <div
             className="
@@ -946,9 +661,9 @@ export default function GallerySection() {
             </div>
           </div>
 
-          {/* ==============================================
+          {/* =================================================
               PHOTOS
-          =============================================== */}
+          ================================================= */}
 
           {images.map((image, index) => (
             <FilmFrame
@@ -956,13 +671,12 @@ export default function GallerySection() {
               image={image}
               index={index}
               total={images.length}
-              onOpen={() => setLightbox(index)}
             />
           ))}
 
-          {/* ==============================================
+          {/* =================================================
               END
-          =============================================== */}
+          ================================================= */}
 
           <div
             className="
@@ -1011,7 +725,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* ================================================
+        {/* =================================================
             SCROLL LABEL
         ================================================= */}
 
@@ -1045,21 +759,6 @@ export default function GallerySection() {
           <span className="h-px w-8 bg-[#d8ad55]/25" />
         </div>
       </div>
-
-      {/* ===================================================
-          LIGHTBOX
-      =================================================== */}
-
-      <AnimatePresence>
-        {lightbox !== null && (
-          <GalleryLightbox
-            images={images}
-            index={lightbox}
-            onClose={() => setLightbox(null)}
-            onNavigate={navigateLightbox}
-          />
-        )}
-      </AnimatePresence>
     </section>
   );
 }
