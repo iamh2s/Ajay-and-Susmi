@@ -253,47 +253,47 @@
     "url": "https://hariharasudhan-portfolio-iota.vercel.app/"
   },
   "nav": [
-    {
-      "id": "home",
-      "ta": "முகப்பு",
-      "en": "Home",
-      "icon": "home"
-    },
-    {
-      "id": "story",
-      "ta": "கதை",
-      "en": "Story",
-      "icon": "book"
-    },
-    {
-      "id": "couple",
-      "ta": "மணமக்கள்",
-      "en": "Couple",
-      "icon": "heart"
-    },
-    {
-      "id": "invitation",
-      "ta": "அழைப்பு",
-      "en": "Invitation",
-      "icon": "mail"
-    },
-    {
-      "id": "gallery",
-      "ta": "புகைப்படம்",
-      "en": "Gallery",
-      "icon": "image"
-    },
-    {
-      "id": "venue",
-      "ta": "இடம்",
-      "en": "Venue",
-      "icon": "map"
-    },
-    {
-      "id": "contact",
-      "ta": "தொடர்பு",
-      "en": "Contact",
-      "icon": "phone"
-    }
-  ]
+  {
+    "id": "home",
+    "ta": "முகப்பு",
+    "en": "Home",
+    "icon": "home"
+  },
+  {
+    "id": "story",
+    "ta": "கதை",
+    "en": "Story",
+    "icon": "book"
+  },
+  {
+    "id": "couple",
+    "ta": "மணமக்கள்",
+    "en": "Couple",
+    "icon": "heart"
+  },
+  {
+    "id": "invitation",
+    "ta": "அழைப்பு",
+    "en": "Invitation",
+    "icon": "message"
+  },
+  {
+    "id": "contact",
+    "ta": "தொடர்பு",
+    "en": "Contact",
+    "icon": "phone"
+  },
+  {
+    "id": "gallery",
+    "ta": "புகைப்படம்",
+    "en": "Gallery",
+    "icon": "image"
+  },
+  {
+    "id": "venue",
+    "ta": "இடம்",
+    "en": "Venue",
+    "icon": "location"
+  }
+]
 }
