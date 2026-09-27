@@ -103,7 +103,8 @@ export default function App() {
             SEPARATE CONTACT CARD
         ================================================= */}
 
-       
+        <ContactCard />
+
 
         <CountdownSection />
 
@@ -111,7 +112,6 @@ export default function App() {
 
         <VenueSection />
 
-        <ContactCard />
 
         <FinalSection />
       </main>
