@@ -4,7 +4,9 @@ import {
   useRef,
   useState,
 } from "react";
+
 import { AnimatePresence, motion } from "framer-motion";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { gsap, ScrollTrigger } from "../lib/gsap";
+
 import data from "@/data/weddingData.json";
 
 import {
@@ -100,9 +103,9 @@ function FilmFrame({
           md:p-3
         "
       >
-        {/* ===============================================
+        {/* =================================================
             IMAGE
-        ================================================ */}
+        ================================================== */}
 
         <button
           type="button"
@@ -137,11 +140,6 @@ function FilmFrame({
                 object-cover
                 transform-gpu
                 select-none
-                will-change-auto
-                transition-transform
-                duration-[1400ms]
-                ease-out
-                md:group-hover:scale-[1.035]
               "
             />
 
@@ -181,16 +179,13 @@ function FilmFrame({
                 absolute
                 inset-0
                 bg-[#d8ad55]/0
-                transition-colors
-                duration-500
-                md:group-hover:bg-[#d8ad55]/[0.025]
               "
             />
           </div>
 
-          {/* =============================================
+          {/* =================================================
               NUMBER
-          ============================================== */}
+          ================================================== */}
 
           <span
             className="
@@ -214,48 +209,11 @@ function FilmFrame({
             {String(index + 1).padStart(2, "0")} /{" "}
             {String(total).padStart(2, "0")}
           </span>
-
-          {/* =============================================
-              DESKTOP OPEN INDICATOR
-          ============================================== */}
-
-          <span
-            aria-hidden="true"
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              hidden
-              h-11
-              w-11
-              -translate-x-1/2
-              -translate-y-1/2
-              items-center
-              justify-center
-              rounded-full
-              border
-              border-[#f0d38a]/70
-              bg-[#17060b]/50
-              text-[#f0d38a]
-              opacity-0
-              backdrop-blur-sm
-              transition-all
-              duration-400
-              md:flex
-              md:scale-75
-              md:group-hover:scale-100
-              md:group-hover:opacity-100
-            "
-          >
-            <span className="text-lg font-light">
-              +
-            </span>
-          </span>
         </button>
 
-        {/* ===============================================
+        {/* =================================================
             CAPTION
-        ================================================ */}
+        ================================================== */}
 
         <figcaption className="flex items-center justify-between gap-4 px-1.5 pt-3 sm:px-2 sm:pt-3.5">
           <p className="min-w-0 truncate font-latin text-xs italic text-[#f7ead7]/85 sm:text-sm">
@@ -289,9 +247,7 @@ function GalleryLightbox({
   const current = images[index];
 
   useLayoutEffect(() => {
-    document.documentElement.classList.add(
-      "scroll-locked"
-    );
+    document.documentElement.classList.add("scroll-locked");
 
     const handleKeyboard = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -307,20 +263,11 @@ function GalleryLightbox({
       }
     };
 
-    window.addEventListener(
-      "keydown",
-      handleKeyboard
-    );
+    window.addEventListener("keydown", handleKeyboard);
 
     return () => {
-      document.documentElement.classList.remove(
-        "scroll-locked"
-      );
-
-      window.removeEventListener(
-        "keydown",
-        handleKeyboard
-      );
+      document.documentElement.classList.remove("scroll-locked");
+      window.removeEventListener("keydown", handleKeyboard);
     };
   }, [onClose, onNavigate]);
 
@@ -496,9 +443,7 @@ function GalleryLightbox({
             z-20
             max-w-[88vw]
           "
-          onClick={(event) =>
-            event.stopPropagation()
-          }
+          onClick={(event) => event.stopPropagation()}
         >
           <div
             className="
@@ -549,7 +494,6 @@ export default function GallerySection() {
   const images = gallery.images as GalleryImage[];
 
   const root = useRef<HTMLElement>(null);
-
   const track = useRef<HTMLDivElement>(null);
 
   const [extra, setExtra] = useState(0);
@@ -576,8 +520,7 @@ export default function GallerySection() {
 
         const distance = Math.max(
           0,
-          track.current.scrollWidth -
-            window.innerWidth
+          track.current.scrollWidth - window.innerWidth
         );
 
         setExtra((previous) =>
@@ -619,7 +562,6 @@ export default function GallerySection() {
 
   useLayoutEffect(() => {
     const section = root.current;
-
     const element = track.current;
 
     if (!section || !element || extra <= 0) {
