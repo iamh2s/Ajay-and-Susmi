@@ -4,7 +4,7 @@ import {
   useState,
 } from "react";
 
-import { Heart, MoveRight } from "lucide-react";
+
 
 import { gsap, ScrollTrigger } from "../lib/gsap";
 
@@ -652,12 +652,8 @@ export default function GallerySection() {
                 text-[#d8ad55]/75
               "
             >
-              Keep scrolling
+              Keep scrolling Down to Explore all images ↓
 
-              <MoveRight
-                className="h-4 w-4"
-                strokeWidth={1.4}
-              />
             </div>
           </div>
 
