@@ -5,23 +5,23 @@
   },
   "couple": {
     "bride": {
-      "tamil": "K.T. சுஸ்மிதா",
+      "tamil": "K.T. சுஷ்மிதா ",
       "english": "K.T. Susmitha",
       "fullTamil": "K.T. சுஸ்மிதா",
       "fullEnglish": "K.T. Susmitha",
       "roleTa": "மணமகள்",
       "roleEn": "The Bride",
       "image": "/images/bride.jpg",
-      "imageAlt": "K.T. சுஸ்மிதா, the bride, in a maroon Kanjivaram silk saree with antique gold temple jewellery and jasmine garlands"
+      "imageAlt": "K.T. சுஷ்மிதா , the bride, in a maroon Kanjivaram silk saree with antique gold temple jewellery and jasmine garlands"
     },
     "groom": {
-      "tamil": "M.P. அஜய்குமார்",
+      "tamil": "M.P. அஜெய்குமார் ",
       "english": "M.P. Ajaykumar",
-      "inviteTamil": "எம்.பி. அஜய்குமார்",
+      "inviteTamil": "எம்.பி. அஜெய்குமார்",
       "roleTa": "மணமகன்",
       "roleEn": "The Groom",
       "image": "/images/groom.jpg",
-      "imageAlt": "M.P. அஜய்குமார், the groom, in a cream silk shirt and gold-bordered veshti with angavastram"
+      "imageAlt": "M.P. அஜெய்குமார், the groom, in a cream silk shirt and gold-bordered veshti with angavastram"
     }
   },
   "intro": {
