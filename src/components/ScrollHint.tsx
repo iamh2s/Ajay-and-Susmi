@@ -8,6 +8,7 @@ export default function ScrollHint() {
   const reduce = useReducedMotion();
 
   const [showHint, setShowHint] = useState(true);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -22,7 +23,13 @@ export default function ScrollHint() {
     const startTimer = () => {
       clearTimer();
 
-      // Hide immediately when user is scrolling
+      // If footer is visible, keep the hint visible
+      if (isFooterVisible) {
+        setShowHint(true);
+        return;
+      }
+
+      // Hide while scrolling
       setShowHint(false);
 
       // Show again after 7 seconds of no scrolling
@@ -35,9 +42,6 @@ export default function ScrollHint() {
       startTimer();
     };
 
-    // Hero opens → show hint immediately
-    setShowHint(true);
-
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
@@ -45,6 +49,37 @@ export default function ScrollHint() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       clearTimer();
+    };
+  }, [isFooterVisible]);
+
+  /*
+   * Detect footer visibility
+   */
+  useEffect(() => {
+    const footer = document.getElementById("footer");
+
+    if (!footer) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.isIntersecting;
+
+        setIsFooterVisible(visible);
+
+        if (visible) {
+          // Footer reached → show hint immediately
+          setShowHint(true);
+        }
+      },
+      {
+        threshold: 0.15,
+      }
+    );
+
+    observer.observe(footer);
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -77,7 +112,6 @@ export default function ScrollHint() {
       "
     >
       {/* Text */}
-
       <span
         className="
           font-latin
@@ -90,11 +124,10 @@ export default function ScrollHint() {
           sm:text-[10px]
         "
       >
-        Scroll Down
+        {isFooterVisible ? "Back to Top" : "Scroll Down"}
       </span>
 
       {/* Hand */}
-
       <motion.div
         animate={
           showHint && !reduce
@@ -138,7 +171,6 @@ export default function ScrollHint() {
       </motion.div>
 
       {/* Down indicator */}
-
       <motion.span
         animate={
           showHint && !reduce
