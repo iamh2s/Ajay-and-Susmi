@@ -1,9 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import CountdownSection from "./components/CountdownSection";
 import CoupleSection from "./components/CoupleSection";
@@ -17,21 +13,15 @@ import MusicPlayer from "./components/MusicPlayer";
 import ScrollHint from "./components/ScrollHint";
 import SideNavigation from "./components/SideNavigation";
 import StorySection from "./components/StorySection";
-// import VenueSection from "./components/VenueSection";
-
-/* =========================================================
-   CONTACT BUTTON + POPUP
-========================================================= */
-
 import ContactButton from "./components/Contact";
-
 import { SvgDefs } from "./components/decor";
 
 export default function App() {
   const [opened, setOpened] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   /* =========================================================
-     USER TAPS "TOUCH TO OPEN"
+     OPEN INVITATION
   ========================================================= */
 
   const handleOpenStart = useCallback(() => {
@@ -40,16 +30,12 @@ export default function App() {
     );
   }, []);
 
-  /* =========================================================
-     DOOR ANIMATION FINISHED
-  ========================================================= */
-
   const handleOpened = useCallback(() => {
     setOpened(true);
   }, []);
 
   /* =========================================================
-     SCROLL LOCK
+     LOCK PAGE SCROLL WHILE INTRO IS OPEN
   ========================================================= */
 
   useEffect(() => {
@@ -65,6 +51,49 @@ export default function App() {
     };
   }, [opened]);
 
+  /* =========================================================
+     CONTACT VISIBILITY
+
+     SAME TRIGGER AS SIDE NAVIGATION
+
+     SideNavigation:
+       window.scrollY > window.innerHeight * 0.55
+
+     Contact:
+       window.scrollY > window.innerHeight * 0.55
+  ========================================================= */
+
+  useEffect(() => {
+    if (!opened) {
+      setShowContact(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      setShowContact(
+        window.scrollY > window.innerHeight * 0.55
+      );
+    };
+
+    // Check immediately
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [opened]);
+
+  /* =========================================================
+     RENDER
+  ========================================================= */
+
   return (
     <>
       {/* =====================================================
@@ -74,7 +103,7 @@ export default function App() {
       <SvgDefs />
 
       {/* =====================================================
-          INTRO / TOUCH TO OPEN
+          INVITATION INTRO
       ===================================================== */}
 
       <AnimatePresence>
@@ -88,65 +117,27 @@ export default function App() {
       </AnimatePresence>
 
       {/* =====================================================
-          MAIN INVITATION
+          MAIN CONTENT
       ===================================================== */}
 
       <main id="main">
-
-        {/* =================================================
-            HERO
-        ================================================= */}
-
         <HeroSection active={opened} />
-
-        {/* =================================================
-            STORY
-        ================================================= */}
 
         <StorySection />
 
-        {/* =================================================
-            COUPLE
-        ================================================= */}
-
         <CoupleSection />
-
-        {/* =================================================
-            FAMILY
-        ================================================= */}
 
         <FamilySection />
 
-        {/* =================================================
-            INVITATION
-        ================================================= */}
-
         <InvitationSection />
-
-        {/* =================================================
-            COUNTDOWN
-        ================================================= */}
 
         <CountdownSection />
 
-        {/* =================================================
-            GALLERY
-        ================================================= */}
-
         <GallerySection />
-
-        {/* =================================================
-            VENUE
-        ================================================= */}
 
         {/* <VenueSection /> */}
 
-        {/* =================================================
-            FINAL
-        ================================================= */}
-
         <FinalSection />
-
       </main>
 
       {/* =====================================================
@@ -156,7 +147,7 @@ export default function App() {
       <MusicPlayer opened={opened} />
 
       {/* =====================================================
-          GLOBAL CONTROLS
+          FLOATING UI
       ===================================================== */}
 
       {opened && (
@@ -168,19 +159,27 @@ export default function App() {
           <ScrollHint />
 
           {/* =================================================
-              SIDE NAVIGATION
+              RIGHT SIDE NAVIGATION
+
+              This already handles its own animation.
           ================================================= */}
 
           <SideNavigation />
 
           {/* =================================================
-              CONTACT BUTTON
-              
-              The button stays fixed on the LEFT side.
-              Clicking it opens the contact popup.
+              LEFT CONTACT BUTTON
+
+              IMPORTANT:
+              No wrapper here.
+
+              ContactButton itself handles:
+              - fixed positioning
+              - left positioning
+              - animation
+              - opacity
           ================================================= */}
 
-          <ContactButton />
+          <ContactButton visible={showContact} />
         </>
       )}
     </>

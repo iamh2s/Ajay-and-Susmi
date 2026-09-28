@@ -148,8 +148,7 @@ export default function InvitationSection() {
      Replace this with your actual Google Maps URL.
   ======================================================= */
 
-  const googleMapsUrl =
-    "YOUR_GOOGLE_MAPS_LINK";
+
 
   return (
     <section

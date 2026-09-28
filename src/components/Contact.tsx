@@ -1,8 +1,23 @@
 import { useEffect, useState } from "react";
 import { Phone, X } from "lucide-react";
+
 import { GoldDivider } from "./decor";
 
-export default function ContactButton() {
+/* =========================================================
+   TYPES
+========================================================= */
+
+type ContactButtonProps = {
+  visible: boolean;
+};
+
+/* =========================================================
+   CONTACT BUTTON
+========================================================= */
+
+export default function ContactButton({
+  visible,
+}: ContactButtonProps) {
   const [open, setOpen] = useState(false);
 
   /* =========================================================
@@ -42,61 +57,97 @@ export default function ContactButton() {
   return (
     <>
       {/* =====================================================
-          LEFT SIDE CONTACT BUTTON
+          RESPONSIVE CONTACT BUTTON
       ====================================================== */}
 
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="தொடர்பு"
-        className="
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-hidden={!visible && !open}
+        tabIndex={visible ? 0 : -1}
+        className={`
           fixed
           left-0
           top-1/2
           z-[150]
+
           -translate-y-1/2
 
           flex
-          h-20
-          w-10
           items-center
           justify-center
 
-          rounded-r-full
+          h-[72px]
+          w-[36px]
+
+          sm:h-[82px]
+          sm:w-[40px]
+
+          md:h-[92px]
+          md:w-[44px]
+
+          rounded-r-[18px]
 
           border
           border-l-0
           border-gold-deep/70
 
           bg-maroon
-
           text-gold-light
 
           shadow-[4px_8px_25px_rgba(0,0,0,0.35)]
 
           transition-all
-          duration-300
+          duration-700
 
-          hover:w-12
+          hover:w-[42px]
+          sm:hover:w-[46px]
+          md:hover:w-[50px]
+
           hover:bg-maroon/95
 
           active:scale-95
 
-          sm:h-24
-          sm:w-11
-        "
+          touch-manipulation
+          select-none
+
+          focus:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-gold-light
+          focus-visible:ring-offset-2
+          focus-visible:ring-offset-maroon
+
+          ${
+            visible
+              ? "translate-x-0 opacity-100"
+              : "pointer-events-none -translate-x-4 opacity-0"
+          }
+        `}
       >
         <span
           className="
+            flex
+            items-center
+            justify-center
+
             font-tamil
-            text-sm
+            text-[11px]
             font-bold
+
             tracking-wider
 
             [writing-mode:vertical-rl]
 
+            whitespace-nowrap
+
             transition-transform
             duration-300
+
+            sm:text-xs
+            md:text-sm
           "
         >
           தொடர்பு
@@ -119,11 +170,15 @@ export default function ContactButton() {
             justify-center
 
             bg-black/70
-
-            px-4
-            py-6
-
             backdrop-blur-sm
+
+            px-3
+            py-4
+
+            sm:px-5
+            sm:py-6
+
+            md:px-8
 
             animate-[contactOverlay_0.25s_ease-out]
           "
@@ -140,13 +195,14 @@ export default function ContactButton() {
             className="
               relative
 
-              max-h-[90vh]
+              max-h-[calc(100dvh-2rem)]
               w-full
-              max-w-2xl
+              max-w-[94vw]
 
               overflow-y-auto
+              overscroll-contain
 
-              rounded-[1.8rem]
+              rounded-[1.4rem]
 
               bg-gradient-to-b
               from-gold-light
@@ -158,6 +214,10 @@ export default function ContactButton() {
               shadow-[0_35px_90px_rgba(0,0,0,0.8)]
 
               animate-[contactCardIn_0.3s_ease-out]
+
+              sm:max-h-[90vh]
+              sm:max-w-2xl
+              sm:rounded-[1.8rem]
             "
             onClick={(event) => event.stopPropagation()}
           >
@@ -171,19 +231,19 @@ export default function ContactButton() {
                 paper-texture
 
                 relative
-
                 overflow-hidden
 
-                rounded-[calc(1.8rem-3px)]
+                rounded-[calc(1.4rem-3px)]
 
                 border
                 border-gold-deep/40
 
-                px-5
-                py-7
+                px-4
+                py-6
 
                 text-center
 
+                sm:rounded-[calc(1.8rem-3px)]
                 sm:px-8
                 sm:py-9
               "
@@ -216,6 +276,7 @@ export default function ContactButton() {
                 className="
                   pointer-events-none
                   absolute
+
                   left-3
                   top-3
 
@@ -240,6 +301,7 @@ export default function ContactButton() {
                 className="
                   pointer-events-none
                   absolute
+
                   right-3
                   top-3
 
@@ -264,6 +326,7 @@ export default function ContactButton() {
                 className="
                   pointer-events-none
                   absolute
+
                   bottom-3
                   left-3
 
@@ -288,6 +351,7 @@ export default function ContactButton() {
                 className="
                   pointer-events-none
                   absolute
+
                   bottom-3
                   right-3
 
@@ -315,13 +379,15 @@ export default function ContactButton() {
                 aria-label="மூடு"
                 className="
                   absolute
+
                   right-3
                   top-3
+
                   z-30
 
                   flex
-                  h-8
-                  w-8
+                  h-9
+                  w-9
 
                   items-center
                   justify-center
@@ -345,11 +411,19 @@ export default function ContactButton() {
 
                   active:scale-90
 
+                  touch-manipulation
+
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-gold-deep
+
                   sm:right-5
                   sm:top-5
+                  sm:h-10
+                  sm:w-10
                 "
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
 
               {/* =================================================
@@ -357,7 +431,6 @@ export default function ContactButton() {
               ================================================== */}
 
               <div className="relative">
-
                 {/* =================================================
                     TOP DIVIDER
                 ================================================== */}
@@ -375,11 +448,30 @@ export default function ContactButton() {
                 ================================================== */}
 
                 <div className="mt-4">
-                  <p className="font-tamil text-2xl font-bold text-maroon sm:text-3xl">
+                  <p
+                    className="
+                      font-tamil
+                      text-2xl
+                      font-bold
+                      text-maroon
+
+                      sm:text-3xl
+                    "
+                  >
                     தொடர்புக்கு
                   </p>
 
-                  <p className="mt-1 font-latin text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-gold-deep">
+                  <p
+                    className="
+                      mt-1
+                      font-latin
+                      text-[0.6rem]
+                      font-semibold
+                      uppercase
+                      tracking-[0.4em]
+                      text-gold-deep
+                    "
+                  >
                     Contact
                   </p>
                 </div>
@@ -392,8 +484,17 @@ export default function ContactButton() {
                     CONTACT PEOPLE
                 ================================================== */}
 
-                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div
+                  className="
+                    mt-6
+                    grid
+                    grid-cols-1
+                    gap-4
 
+                    sm:grid-cols-2
+                    sm:gap-5
+                  "
+                >
                   {/* =================================================
                       VISHAL KUMAR
                   ================================================== */}
@@ -417,12 +518,9 @@ export default function ContactButton() {
 
                       hover:-translate-y-1
                       hover:bg-ivory
-
                       hover:shadow-[0_15px_35px_-18px_rgba(176,141,60,0.65)]
                     "
                   >
-                    {/* Phone Icon */}
-
                     <span
                       className="
                         mx-auto
@@ -449,31 +547,55 @@ export default function ContactButton() {
                       <Phone className="h-4 w-4" />
                     </span>
 
-                    {/* Name */}
+                    <p
+                      className="
+                        mt-3
+                        font-latin
+                        text-base
+                        font-bold
+                        text-maroon
 
-                    <p className="mt-3 font-latin text-base font-bold text-maroon sm:text-lg">
+                        sm:text-lg
+                      "
+                    >
                       Vishal Kumar
                     </p>
 
-                    {/* Tamil Relation */}
-
-                    <p className="mt-1 font-tamil text-xs font-semibold text-gold-deep">
+                    <p
+                      className="
+                        mt-1
+                        font-tamil
+                        text-xs
+                        font-semibold
+                        text-gold-deep
+                      "
+                    >
                       மணமகன் சகோதரர்
                     </p>
 
-                    {/* English Relation */}
-
-                    <p className="mt-1 font-latin text-xs text-ink/55">
+                    <p
+                      className="
+                        mt-1
+                        font-latin
+                        text-xs
+                        text-ink/55
+                      "
+                    >
                       Brother of Groom
                     </p>
 
-                    {/* Phone Number */}
-
-                    <p className="mt-2 font-latin text-sm font-bold tracking-wide text-maroon">
+                    <p
+                      className="
+                        mt-2
+                        font-latin
+                        text-sm
+                        font-bold
+                        tracking-wide
+                        text-maroon
+                      "
+                    >
                       +91 90250 10393
                     </p>
-
-                    {/* Call Button */}
 
                     <a
                       href="tel:+919025010393"
@@ -481,6 +603,8 @@ export default function ContactButton() {
                         mt-4
 
                         inline-flex
+                        min-h-[44px]
+
                         items-center
                         justify-center
                         gap-2
@@ -512,10 +636,11 @@ export default function ContactButton() {
                         hover:bg-maroon/90
 
                         active:scale-95
+
+                        touch-manipulation
                       "
                     >
                       <Phone className="h-3.5 w-3.5" />
-
                       Call Now
                     </a>
                   </div>
@@ -543,12 +668,9 @@ export default function ContactButton() {
 
                       hover:-translate-y-1
                       hover:bg-ivory
-
                       hover:shadow-[0_15px_35px_-18px_rgba(176,141,60,0.65)]
                     "
                   >
-                    {/* Phone Icon */}
-
                     <span
                       className="
                         mx-auto
@@ -575,31 +697,55 @@ export default function ContactButton() {
                       <Phone className="h-4 w-4" />
                     </span>
 
-                    {/* Name */}
+                    <p
+                      className="
+                        mt-3
+                        font-latin
+                        text-base
+                        font-bold
+                        text-maroon
 
-                    <p className="mt-3 font-latin text-base font-bold text-maroon sm:text-lg">
+                        sm:text-lg
+                      "
+                    >
                       Karthikeyan
                     </p>
 
-                    {/* Tamil Relation */}
-
-                    <p className="mt-1 font-tamil text-xs font-semibold text-gold-deep">
+                    <p
+                      className="
+                        mt-1
+                        font-tamil
+                        text-xs
+                        font-semibold
+                        text-gold-deep
+                      "
+                    >
                       மணமகள் சகோதரர்
                     </p>
 
-                    {/* English Relation */}
-
-                    <p className="mt-1 font-latin text-xs text-ink/55">
+                    <p
+                      className="
+                        mt-1
+                        font-latin
+                        text-xs
+                        text-ink/55
+                      "
+                    >
                       Brother of Bride
                     </p>
 
-                    {/* Phone Number */}
-
-                    <p className="mt-2 font-latin text-sm font-bold tracking-wide text-maroon">
+                    <p
+                      className="
+                        mt-2
+                        font-latin
+                        text-sm
+                        font-bold
+                        tracking-wide
+                        text-maroon
+                      "
+                    >
                       +91 95005 21536
                     </p>
-
-                    {/* Call Button */}
 
                     <a
                       href="tel:+919500521536"
@@ -607,6 +753,8 @@ export default function ContactButton() {
                         mt-4
 
                         inline-flex
+                        min-h-[44px]
+
                         items-center
                         justify-center
                         gap-2
@@ -638,10 +786,11 @@ export default function ContactButton() {
                         hover:bg-maroon/90
 
                         active:scale-95
+
+                        touch-manipulation
                       "
                     >
                       <Phone className="h-3.5 w-3.5" />
-
                       Call Now
                     </a>
                   </div>
@@ -657,40 +806,39 @@ export default function ContactButton() {
                     className="text-gold-deep"
                   />
                 </div>
-
               </div>
             </div>
           </div>
-
-          {/* =================================================
-              ANIMATIONS
-          ================================================== */}
-
-          <style>{`
-            @keyframes contactOverlay {
-              from {
-                opacity: 0;
-              }
-
-              to {
-                opacity: 1;
-              }
-            }
-
-            @keyframes contactCardIn {
-              from {
-                opacity: 0;
-                transform: translateY(24px) scale(0.95);
-              }
-
-              to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-              }
-            }
-          `}</style>
         </div>
       )}
+
+      {/* =====================================================
+          ANIMATIONS
+      ====================================================== */}
+
+      <style>{`
+        @keyframes contactOverlay {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes contactCardIn {
+          from {
+            opacity: 0;
+            transform: translateY(24px) scale(0.95);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
     </>
   );
 }
