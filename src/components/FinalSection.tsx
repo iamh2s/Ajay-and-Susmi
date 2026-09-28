@@ -12,7 +12,7 @@ export default function FinalSection() {
   const { final, couple, credit } = data;
 
   return (
-    <footer id = 'footer'
+    <footer id = "footer"
       aria-label={`${final.headingTa} — ${final.headingEn}`}
       className="velvet-texture relative overflow-hidden pt-24 sm:pt-32"
     >

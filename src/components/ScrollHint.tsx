@@ -11,6 +11,7 @@ export default function ScrollHint() {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const footerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const clearTimer = () => {
@@ -20,26 +21,19 @@ export default function ScrollHint() {
       }
     };
 
-    const startTimer = () => {
+    const handleScroll = () => {
+      // At footer, don't run the normal scroll timer
+      if (isFooterVisible) return;
+
       clearTimer();
 
-      // If footer is visible, keep the hint visible
-      if (isFooterVisible) {
-        setShowHint(true);
-        return;
-      }
-
-      // Hide while scrolling
+      // Hide immediately while scrolling
       setShowHint(false);
 
       // Show again after 7 seconds of no scrolling
       timerRef.current = setTimeout(() => {
         setShowHint(true);
       }, 7000);
-    };
-
-    const handleScroll = () => {
-      startTimer();
     };
 
     window.addEventListener("scroll", handleScroll, {
@@ -53,7 +47,7 @@ export default function ScrollHint() {
   }, [isFooterVisible]);
 
   /*
-   * Detect footer visibility
+   * FOOTER DETECTION
    */
   useEffect(() => {
     const footer = document.getElementById("footer");
@@ -66,9 +60,22 @@ export default function ScrollHint() {
 
         setIsFooterVisible(visible);
 
+        if (footerTimerRef.current) {
+          clearTimeout(footerTimerRef.current);
+          footerTimerRef.current = null;
+        }
+
         if (visible) {
-          // Footer reached → show hint immediately
-          setShowHint(true);
+          // Hide immediately when footer is reached
+          setShowHint(false);
+
+          // Wait 10 seconds before showing Go Up
+          footerTimerRef.current = setTimeout(() => {
+            setShowHint(true);
+          }, 10000);
+        } else {
+          // Leaving footer
+          setShowHint(false);
         }
       },
       {
@@ -80,8 +87,22 @@ export default function ScrollHint() {
 
     return () => {
       observer.disconnect();
+
+      if (footerTimerRef.current) {
+        clearTimeout(footerTimerRef.current);
+      }
     };
   }, []);
+
+  /*
+   * GO TO TOP
+   */
+  const goToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <motion.div
@@ -98,7 +119,6 @@ export default function ScrollHint() {
         ease: [0.22, 1, 0.36, 1],
       }}
       className="
-        pointer-events-none
         fixed
         bottom-5
         left-1/2
@@ -111,7 +131,7 @@ export default function ScrollHint() {
         sm:bottom-7
       "
     >
-      {/* Text */}
+      {/* TEXT */}
       <span
         className="
           font-latin
@@ -124,17 +144,25 @@ export default function ScrollHint() {
           sm:text-[10px]
         "
       >
-        {isFooterVisible ? "Back to Top" : "Scroll Down"}
+        {isFooterVisible ? "Go Up" : "Scroll Down"}
       </span>
 
-      {/* Hand */}
-      <motion.div
+      {/* BUTTON */}
+      <motion.button
+        type="button"
+        onClick={isFooterVisible ? goToTop : undefined}
+        aria-label={isFooterVisible ? "Go to top" : "Scroll down"}
         animate={
           showHint && !reduce
-            ? {
-                y: [0, 7, 0],
-                rotate: [0, -5, 5, 0],
-              }
+            ? isFooterVisible
+              ? {
+                  y: [0, -7, 0],
+                  rotate: [0, 5, -5, 0],
+                }
+              : {
+                  y: [0, 7, 0],
+                  rotate: [0, -5, 5, 0],
+                }
             : {}
         }
         transition={{
@@ -143,9 +171,11 @@ export default function ScrollHint() {
           ease: "easeInOut",
         }}
         className="
+          pointer-events-auto
           flex
           h-10
           w-10
+          cursor-pointer
           items-center
           justify-center
           rounded-full
@@ -159,25 +189,34 @@ export default function ScrollHint() {
         "
       >
         <Hand
-          className="
+          className={`
             h-5
             w-5
-            rotate-[-20deg]
             text-gold-light
             sm:h-6
             sm:w-6
-          "
+            ${
+              isFooterVisible
+                ? "rotate-[160deg]"
+                : "rotate-[-20deg]"
+            }
+          `}
         />
-      </motion.div>
+      </motion.button>
 
-      {/* Down indicator */}
+      {/* INDICATOR */}
       <motion.span
         animate={
           showHint && !reduce
-            ? {
-                height: [10, 20, 10],
-                opacity: [0.4, 1, 0.4],
-              }
+            ? isFooterVisible
+              ? {
+                  height: [20, 10, 20],
+                  opacity: [1, 0.4, 1],
+                }
+              : {
+                  height: [10, 20, 10],
+                  opacity: [0.4, 1, 0.4],
+                }
             : {}
         }
         transition={{
@@ -185,13 +224,16 @@ export default function ScrollHint() {
           repeat: showHint && !reduce ? Infinity : 0,
           ease: "easeInOut",
         }}
-        className="
+        className={`
           block
           w-px
           bg-gradient-to-b
-          from-gold-light
-          to-transparent
-        "
+          ${
+            isFooterVisible
+              ? "from-transparent to-gold-light"
+              : "from-gold-light to-transparent"
+          }
+        `}
       />
     </motion.div>
   );
