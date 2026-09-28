@@ -17,7 +17,7 @@
     "groom": {
       "tamil": "M.P. அஜெய்குமார் ",
       "english": "M.P. Ajaykumar",
-      "inviteTamil": "எம்.பி. அஜெய்குமார்",
+      "inviteTamil": "M.P. அஜெய்குமார்",
       "roleTa": "மணமகன்",
       "roleEn": "The Groom",
       "image": "/images/groom.jpg",
@@ -278,22 +278,10 @@
     "icon": "message"
   },
   {
-    "id": "contact",
-    "ta": "தொடர்பு",
-    "en": "Contact",
-    "icon": "phone"
-  },
-  {
     "id": "gallery",
     "ta": "புகைப்படம்",
     "en": "Gallery",
     "icon": "image"
-  },
-  {
-    "id": "venue",
-    "ta": "இடம்",
-    "en": "Venue",
-    "icon": "location"
   }
 ]
 }

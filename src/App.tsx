@@ -17,10 +17,13 @@ import MusicPlayer from "./components/MusicPlayer";
 import ScrollHint from "./components/ScrollHint";
 import SideNavigation from "./components/SideNavigation";
 import StorySection from "./components/StorySection";
-import VenueSection from "./components/VenueSection";
+// import VenueSection from "./components/VenueSection";
 
-/* IMPORTANT */
-import ContactCard from "./components/ContactCard";
+/* =========================================================
+   CONTACT BUTTON + POPUP
+========================================================= */
+
+import ContactButton from "./components/Contact";
 
 import { SvgDefs } from "./components/decor";
 
@@ -89,31 +92,61 @@ export default function App() {
       ===================================================== */}
 
       <main id="main">
+
+        {/* =================================================
+            HERO
+        ================================================= */}
+
         <HeroSection active={opened} />
+
+        {/* =================================================
+            STORY
+        ================================================= */}
 
         <StorySection />
 
+        {/* =================================================
+            COUPLE
+        ================================================= */}
+
         <CoupleSection />
 
+        {/* =================================================
+            FAMILY
+        ================================================= */}
+
         <FamilySection />
+
+        {/* =================================================
+            INVITATION
+        ================================================= */}
 
         <InvitationSection />
 
         {/* =================================================
-            SEPARATE CONTACT CARD
+            COUNTDOWN
         ================================================= */}
-
-        <ContactCard />
-
 
         <CountdownSection />
 
+        {/* =================================================
+            GALLERY
+        ================================================= */}
+
         <GallerySection />
 
-        <VenueSection />
+        {/* =================================================
+            VENUE
+        ================================================= */}
 
+        {/* <VenueSection /> */}
+
+        {/* =================================================
+            FINAL
+        ================================================= */}
 
         <FinalSection />
+
       </main>
 
       {/* =====================================================
@@ -128,9 +161,26 @@ export default function App() {
 
       {opened && (
         <>
+          {/* =================================================
+              SCROLL HINT
+          ================================================= */}
+
           <ScrollHint />
 
+          {/* =================================================
+              SIDE NAVIGATION
+          ================================================= */}
+
           <SideNavigation />
+
+          {/* =================================================
+              CONTACT BUTTON
+              
+              The button stays fixed on the LEFT side.
+              Clicking it opens the contact popup.
+          ================================================= */}
+
+          <ContactButton />
         </>
       )}
     </>

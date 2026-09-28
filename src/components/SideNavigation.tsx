@@ -5,7 +5,6 @@ import {
   Images,
   Mail,
   MapPin,
-  Phone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,7 +21,6 @@ const icons: Record<string, LucideIcon> = {
   book: BookOpen,
   heart: Heart,
   message: Mail,
-  phone: Phone,
   image: Images,
   location: MapPin,
 };
