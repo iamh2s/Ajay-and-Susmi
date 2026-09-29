@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { Hand } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ScrollHint() {
   const reduce = useReducedMotion();
@@ -10,29 +10,71 @@ export default function ScrollHint() {
   const [showHint, setShowHint] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const footerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /*
+   * =========================================================
+   * CLEAR TIMERS
+   * =========================================================
+   */
+
+  const clearScrollTimer = useCallback(() => {
+    if (scrollTimerRef.current) {
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = null;
+    }
+  }, []);
+
+  const clearFooterTimer = useCallback(() => {
+    if (footerTimerRef.current) {
+      clearTimeout(footerTimerRef.current);
+      footerTimerRef.current = null;
+    }
+  }, []);
+
+  /*
+   * =========================================================
+   * SCROLL DETECTION
+   * =========================================================
+   */
+
   useEffect(() => {
-    const clearTimer = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
+    let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
 
     const handleScroll = () => {
-      // At footer, don't run the normal scroll timer
-      if (isFooterVisible) return;
+      /*
+       * If footer is currently visible,
+       * footer logic controls the hint.
+       */
+      if (isFooterVisible) {
+        return;
+      }
 
-      clearTimer();
-
-      // Hide immediately while scrolling
+      /*
+       * Hide immediately while scrolling.
+       */
       setShowHint(false);
 
-      // Show again after 7 seconds of no scrolling
-      timerRef.current = setTimeout(() => {
-        setShowHint(true);
+      /*
+       * Clear previous timer.
+       */
+      clearScrollTimer();
+
+      /*
+       * Small debounce for mobile browsers.
+       */
+      if (scrollEndTimer) {
+        clearTimeout(scrollEndTimer);
+      }
+
+      scrollEndTimer = setTimeout(() => {
+        /*
+         * Check again before showing.
+         */
+        if (!isFooterVisible) {
+          setShowHint(true);
+        }
       }, 7000);
     };
 
@@ -42,67 +84,144 @@ export default function ScrollHint() {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      clearTimer();
+
+      clearScrollTimer();
+
+      if (scrollEndTimer) {
+        clearTimeout(scrollEndTimer);
+      }
     };
-  }, [isFooterVisible]);
+  }, [isFooterVisible, clearScrollTimer]);
 
   /*
+   * =========================================================
    * FOOTER DETECTION
+   * =========================================================
    */
+
   useEffect(() => {
     const footer = document.getElementById("footer");
 
-    if (!footer) return;
+    if (!footer) {
+      console.warn("ScrollHint: #footer not found");
+      return;
+    }
 
+    /*
+     * Mobile browsers can change viewport height
+     * while the address bar appears/disappears.
+     *
+     * Therefore we use a small rootMargin instead of
+     * relying only on a strict threshold.
+     */
     const observer = new IntersectionObserver(
       ([entry]) => {
         const visible = entry.isIntersecting;
 
         setIsFooterVisible(visible);
 
-        if (footerTimerRef.current) {
-          clearTimeout(footerTimerRef.current);
-          footerTimerRef.current = null;
-        }
+        clearFooterTimer();
 
         if (visible) {
-          // Hide immediately when footer is reached
+          /*
+           * Footer reached:
+           * immediately hide Scroll Down.
+           */
           setShowHint(false);
 
-          // Wait 10 seconds before showing Go Up
+          /*
+           * Wait 10 seconds.
+           */
           footerTimerRef.current = setTimeout(() => {
+            /*
+             * Only show Go Up if footer is still visible.
+             */
             setShowHint(true);
           }, 10000);
         } else {
-          // Leaving footer
+          /*
+           * User left footer.
+           */
           setShowHint(false);
         }
       },
       {
-        threshold: 0.15,
+        /*
+         * More reliable on mobile.
+         */
+        threshold: 0,
+
+        /*
+         * Consider footer reached slightly before
+         * it completely enters the viewport.
+         */
+        rootMargin: "0px 0px -5% 0px",
       }
     );
 
     observer.observe(footer);
 
-    return () => {
-      observer.disconnect();
+    /*
+     * Initial check.
+     *
+     * Some mobile browsers don't immediately trigger
+     * IntersectionObserver after hydration.
+     */
+    const initialCheck = () => {
+      const rect = footer.getBoundingClientRect();
 
-      if (footerTimerRef.current) {
-        clearTimeout(footerTimerRef.current);
+      const viewportHeight =
+        window.innerHeight ||
+        document.documentElement.clientHeight;
+
+      const visible =
+        rect.top < viewportHeight &&
+        rect.bottom > 0;
+
+      if (visible) {
+        setIsFooterVisible(true);
       }
     };
-  }, []);
+
+    requestAnimationFrame(initialCheck);
+
+    return () => {
+      observer.disconnect();
+      clearFooterTimer();
+    };
+  }, [clearFooterTimer]);
 
   /*
+   * =========================================================
    * GO TO TOP
+   * =========================================================
    */
+
   const goToTop = () => {
+    clearScrollTimer();
+    clearFooterTimer();
+
+    setIsFooterVisible(false);
+    setShowHint(false);
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+
+    /*
+     * Show Scroll Down again after returning to top.
+     */
+    setTimeout(() => {
+      setShowHint(true);
+    }, 1200);
   };
+
+  /*
+   * =========================================================
+   * RENDER
+   * =========================================================
+   */
 
   return (
     <motion.div
@@ -119,8 +238,9 @@ export default function ScrollHint() {
         ease: [0.22, 1, 0.36, 1],
       }}
       className="
+        pointer-events-none
         fixed
-        bottom-5
+        bottom-[calc(1.25rem+env(safe-area-inset-bottom))]
         left-1/2
         z-[9999]
         flex
@@ -131,7 +251,10 @@ export default function ScrollHint() {
         sm:bottom-7
       "
     >
-      {/* TEXT */}
+      {/* =====================================================
+          TEXT
+      ===================================================== */}
+
       <span
         className="
           font-latin
@@ -147,11 +270,18 @@ export default function ScrollHint() {
         {isFooterVisible ? "Go Up" : "Scroll Down"}
       </span>
 
-      {/* BUTTON */}
+      {/* =====================================================
+          BUTTON
+      ===================================================== */}
+
       <motion.button
         type="button"
         onClick={isFooterVisible ? goToTop : undefined}
-        aria-label={isFooterVisible ? "Go to top" : "Scroll down"}
+        aria-label={
+          isFooterVisible
+            ? "Go to top"
+            : "Scroll down"
+        }
         animate={
           showHint && !reduce
             ? isFooterVisible
@@ -167,7 +297,10 @@ export default function ScrollHint() {
         }
         transition={{
           duration: 1.3,
-          repeat: showHint && !reduce ? Infinity : 0,
+          repeat:
+            showHint && !reduce
+              ? Infinity
+              : 0,
           ease: "easeInOut",
         }}
         className="
@@ -176,6 +309,7 @@ export default function ScrollHint() {
           h-10
           w-10
           cursor-pointer
+          touch-manipulation
           items-center
           justify-center
           rounded-full
@@ -193,6 +327,8 @@ export default function ScrollHint() {
             h-5
             w-5
             text-gold-light
+            transition-transform
+            duration-300
             sm:h-6
             sm:w-6
             ${
@@ -204,7 +340,10 @@ export default function ScrollHint() {
         />
       </motion.button>
 
-      {/* INDICATOR */}
+      {/* =====================================================
+          INDICATOR
+      ===================================================== */}
+
       <motion.span
         animate={
           showHint && !reduce
@@ -221,7 +360,10 @@ export default function ScrollHint() {
         }
         transition={{
           duration: 1.2,
-          repeat: showHint && !reduce ? Infinity : 0,
+          repeat:
+            showHint && !reduce
+              ? Infinity
+              : 0,
           ease: "easeInOut",
         }}
         className={`
