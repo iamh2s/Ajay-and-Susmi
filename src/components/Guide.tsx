@@ -224,17 +224,24 @@ export default function Guide() {
               />
             )}
 
-            {/* CENTERED CARD (mobile, tablet, laptop, desktop) */}
+            {/* CENTERED CARD
+                Phones: 72px free space on each side, so the card sits between
+                the contact tab (left) and the nav bar (right).
+                Tablet / laptop / desktop: normal side spacing. */}
             <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
+              className="
+                pointer-events-none absolute inset-0
+                flex items-center justify-center
+                pl-[72px] pr-[72px]
+                sm:pl-[max(24px,env(safe-area-inset-left))]
+                sm:pr-[max(24px,env(safe-area-inset-right))]
+              "
               style={{
-                paddingTop: "max(12px, env(safe-area-inset-top))",
+                paddingTop: "max(16px, env(safe-area-inset-top))",
                 // extra room at the bottom on the last step for the scroll hint
                 paddingBottom: isLast
-                  ? "max(104px, env(safe-area-inset-bottom))"
-                  : "max(12px, env(safe-area-inset-bottom))",
-                paddingLeft: "max(12px, env(safe-area-inset-left))",
-                paddingRight: "max(12px, env(safe-area-inset-right))",
+                  ? "max(112px, env(safe-area-inset-bottom))"
+                  : "max(16px, env(safe-area-inset-bottom))",
               }}
             >
               <motion.section
@@ -244,12 +251,23 @@ export default function Guide() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="pointer-events-auto max-h-full w-full max-w-[22rem] overflow-y-auto overscroll-contain rounded-3xl border border-[#c7a45e]/60 bg-gradient-to-br from-[#641d2b] via-[#4c101e] to-[#2d0913] p-4 text-[#fff8e9] shadow-2xl sm:max-w-md sm:p-6 lg:max-w-lg"
+                className="
+                  pointer-events-auto flex max-h-full w-full flex-col
+                  overflow-y-auto overscroll-contain
+                  rounded-3xl border border-[#c7a45e]/60
+                  bg-gradient-to-br from-[#641d2b] via-[#4c101e] to-[#2d0913]
+                  px-3.5 py-5 text-[#fff8e9] shadow-2xl
+                  min-h-[26rem]
+                  sm:min-h-0 sm:max-w-md sm:p-6
+                  lg:max-w-lg
+                "
               >
                 {/* Header */}
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#e3c98e] sm:text-[11px]">
-                    Ajay &amp; Susmi · வழிகாட்டி
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <p className="pt-2 text-[9px] uppercase leading-4 tracking-[0.18em] text-[#e3c98e] sm:text-[11px] sm:tracking-[0.2em]">
+                    Ajay &amp; Susmi
+                    <br className="sm:hidden" />
+                    <span className="sm:before:content-['_·_']">வழிகாட்டி</span>
                   </p>
 
                   <button
@@ -263,7 +281,7 @@ export default function Guide() {
                 </div>
 
                 {/* Progress */}
-                <div className="mb-3 flex gap-1.5" aria-hidden="true">
+                <div className="mb-4 flex gap-1.5" aria-hidden="true">
                   {STEPS.map((_, i) => (
                     <div
                       key={i}
@@ -291,51 +309,51 @@ export default function Guide() {
                       <div className="min-w-0">
                         <h2
                           id="guide-title"
-                          className="font-serif text-lg font-semibold leading-tight text-[#fff4dd] sm:text-xl"
+                          className="font-serif text-base font-semibold leading-tight text-[#fff4dd] sm:text-xl"
                         >
                           {title}
                         </h2>
                         <p
                           lang="ta"
-                          className="mt-0.5 text-sm font-medium text-[#e8cb86]"
+                          className="mt-1 text-[13px] font-medium leading-5 text-[#e8cb86] sm:text-sm"
                         >
                           {tamil}
                         </p>
                       </div>
                     </div>
 
-                    <div className="my-3 h-px bg-gradient-to-r from-transparent via-[#d9bb79]/50 to-transparent" />
+                    <div className="my-4 h-px bg-gradient-to-r from-transparent via-[#d9bb79]/50 to-transparent" />
 
-                    <p className="text-sm leading-6 text-[#fff6e8]/90">
+                    <p className="text-[13px] leading-6 text-[#fff6e8]/90 sm:text-sm">
                       {text}
                     </p>
 
                     <p
                       lang="ta"
-                      className="mt-2 text-sm leading-7 text-[#f0dcb7]/90"
+                      className="mt-3 text-[13px] leading-7 text-[#f0dcb7]/90 sm:text-sm"
                     >
                       {textTamil}
                     </p>
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Footer */}
-                <div className="mt-4 flex items-center justify-between gap-2">
+                {/* Footer (pinned to the bottom of the card) */}
+                <div className="mt-auto flex items-center justify-between gap-2 pt-5">
                   <button
                     type="button"
                     onClick={close}
-                    className="px-2 py-2 text-xs text-[#f7e9ce]/75 hover:text-white"
+                    className="py-2 pr-1 text-xs text-[#f7e9ce]/75 hover:text-white"
                   >
                     Skip
                   </button>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     {step > 0 && (
                       <button
                         type="button"
                         onClick={back}
                         aria-label="Previous step"
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9bb79]/45 text-[#f4dfae] hover:bg-white/10"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#d9bb79]/45 text-[#f4dfae] hover:bg-white/10"
                       >
                         <ArrowLeft size={17} />
                       </button>
@@ -344,15 +362,15 @@ export default function Guide() {
                     <button
                       type="button"
                       onClick={next}
-                      className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#f3dfaa] bg-gradient-to-r from-[#f0d89e] to-[#c49b52] px-5 text-sm font-semibold text-[#45101c] active:scale-95"
+                      className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#f3dfaa] bg-gradient-to-r from-[#f0d89e] to-[#c49b52] px-4 text-xs font-semibold text-[#45101c] active:scale-95 sm:px-5 sm:text-sm"
                     >
                       {isLast ? (
                         <>
-                          Start Exploring <Check size={16} />
+                          Start <Check size={15} />
                         </>
                       ) : (
                         <>
-                          Next <ArrowRight size={16} />
+                          Next <ArrowRight size={15} />
                         </>
                       )}
                     </button>

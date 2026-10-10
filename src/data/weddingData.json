@@ -211,27 +211,27 @@
     "headingTa": "புகைப்படத் தொகுப்பு",
     "headingEn": "Photo Gallery",
     "images": [
-      {
-        "src": "/images/gallery/01.jpg",
-        "alt": "Two hearts, one beautiful journey, and a lifetime of togetherness."
-      },
-      {
-        "src": "/images/gallery/02.jpg",
-        "alt": "In your eyes, I found my forever."
-      },
-      {
-        "src": "/images/gallery/03.jpg",
-        "alt": "May our love shine brighter with every passing day."
-      },
-      {
-        "src": "/images/gallery/04.jpg",
-        "alt": "Two souls, one love, one beautiful forever."
-      },
-      {
-        "src": "/images/gallery/05.jpg",
-        "alt": "With love in our hearts, we begin our forever together."
-      }
-    ]
+  {
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614853/01.png",
+    "alt": "A beautiful wedding memory"
+  },
+  {
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614859/02.png",
+    "alt": "A precious moment together"
+  },
+  {
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614862/03.png",
+    "alt": "A timeless memory of love"
+  },
+  {
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614863/04.png",
+    "alt": "A beautiful chapter in our story"
+  },
+  {
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614863/05.png",
+    "alt": "Memories to cherish forever"
+  }
+]
   },
   "music": {
     "src": "/images/music.mp3",
