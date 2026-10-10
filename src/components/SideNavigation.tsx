@@ -31,27 +31,9 @@ const icons: Record<string, LucideIcon> = {
 
 export default function SideNavigation() {
   const [activeId, setActiveId] = useState<string>("home");
-  const [visible, setVisible] = useState(false);
 
-  /* =======================================================
-     SHOW / HIDE NAVIGATION
-  ======================================================= */
-
-  useEffect(() => {
-    const onScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.55);
-    };
-
-    onScroll();
-
-    window.addEventListener("scroll", onScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
+  // Navigation is always visible while this component is mounted.
+  const visible = true;
 
   /* =======================================================
      DETECT ACTIVE SECTION
@@ -95,7 +77,7 @@ export default function SideNavigation() {
     <nav
       aria-label="Wedding sections"
       className={cn(
-        "fixed right-3 top-1/2 z-40 -translate-y-1/2",
+        "fixed right-3 top-1/2 z-50 -translate-y-1/2",
         "transition-all duration-700",
         "sm:right-5",
         visible
@@ -119,13 +101,8 @@ export default function SideNavigation() {
           const active = activeId === item.id;
 
           return (
-            <li
-              key={item.id}
-              className="group relative"
-            >
-              {/* =================================================
-                  NAV BUTTON
-              ================================================= */}
+            <li key={item.id} className="group relative">
+              {/* NAV BUTTON */}
 
               <button
                 type="button"
@@ -178,9 +155,7 @@ export default function SideNavigation() {
                 />
               </button>
 
-              {/* =================================================
-                  TOOLTIP
-              ================================================= */}
+              {/* TOOLTIP */}
 
               <span
                 aria-hidden="true"

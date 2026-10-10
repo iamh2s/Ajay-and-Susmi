@@ -1,50 +1,27 @@
 import { useEffect, useState } from "react";
-import { Phone, X } from "lucide-react";
-
+import { Phone, X, MapPin, Navigation } from "lucide-react";
 import { GoldDivider } from "./decor";
-
-/* =========================================================
-   TYPES
-========================================================= */
 
 type ContactButtonProps = {
   visible: boolean;
 };
-
-/* =========================================================
-   CONTACT BUTTON
-========================================================= */
 
 export default function ContactButton({
   visible,
 }: ContactButtonProps) {
   const [open, setOpen] = useState(false);
 
-  /* =========================================================
-     LOCK PAGE SCROLL WHEN POPUP IS OPEN
-  ========================================================= */
-
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = open ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
     };
   }, [open]);
 
-  /* =========================================================
-     ESC KEY TO CLOSE
-  ========================================================= */
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
+      if (event.key === "Escape") setOpen(false);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -54,11 +31,30 @@ export default function ContactButton({
     };
   }, []);
 
+  const contacts = [
+    {
+      name: "Vishal Kumar",
+      roleTamil: "மணமகன் சகோதரர்",
+      roleEnglish: "Brother of Groom",
+      phone: "+91 90250 10393",
+      tel: "+919025010393",
+    },
+    {
+      name: "Karthikeyan",
+      roleTamil: "மணமகள் சகோதரர்",
+      roleEnglish: "Brother of Bride",
+      phone: "+91 95005 21536",
+      tel: "+919500521536",
+    },
+  ];
+
+  const venueMapUrl =
+    "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent("புது சூரங்குடி திருமண மண்டபம்");
+
   return (
     <>
-      {/* =====================================================
-          RESPONSIVE CONTACT BUTTON
-      ====================================================== */}
+      {/* CONTACT BUTTON */}
 
       <button
         type="button"
@@ -69,57 +65,25 @@ export default function ContactButton({
         aria-hidden={!visible && !open}
         tabIndex={visible ? 0 : -1}
         className={`
-          fixed
-          left-0
-          top-1/2
-          z-[150]
-
+          fixed left-0 top-1/2 z-[150]
           -translate-y-1/2
-
-          flex
-          items-center
-          justify-center
-
-          h-[72px]
-          w-[36px]
-
-          sm:h-[82px]
-          sm:w-[40px]
-
-          md:h-[92px]
-          md:w-[44px]
-
+          flex items-center justify-center
+          h-[72px] w-[36px]
+          sm:h-[82px] sm:w-[40px]
+          md:h-[92px] md:w-[44px]
           rounded-r-[18px]
-
-          border
-          border-l-0
-          border-gold-deep/70
-
-          bg-maroon
-          text-gold-light
-
+          border border-l-0 border-gold-deep/70
+          bg-maroon text-gold-light
           shadow-[4px_8px_25px_rgba(0,0,0,0.35)]
-
-          transition-all
-          duration-700
-
-          hover:w-[42px]
-          sm:hover:w-[46px]
+          transition-all duration-700
+          hover:w-[42px] sm:hover:w-[46px]
           md:hover:w-[50px]
-
           hover:bg-maroon/95
-
           active:scale-95
-
-          touch-manipulation
-          select-none
-
+          touch-manipulation select-none
           focus:outline-none
           focus-visible:ring-2
           focus-visible:ring-gold-light
-          focus-visible:ring-offset-2
-          focus-visible:ring-offset-maroon
-
           ${
             visible
               ? "translate-x-0 opacity-100"
@@ -129,311 +93,137 @@ export default function ContactButton({
       >
         <span
           className="
-            flex
-            items-center
-            justify-center
-
-            font-tamil
-            text-[11px]
-            font-bold
-
-            tracking-wider
-
-            [writing-mode:vertical-rl]
-
+            flex items-center justify-center
+            font-tamil text-[11px] font-bold
+            tracking-wider [writing-mode:vertical-rl]
             whitespace-nowrap
-
-            transition-transform
-            duration-300
-
-            sm:text-xs
-            md:text-sm
+            sm:text-xs md:text-sm
           "
         >
           தொடர்பு
         </span>
       </button>
 
-      {/* =====================================================
-          CONTACT POPUP
-      ====================================================== */}
+      {/* CONTACT POPUP */}
 
       {open && (
         <div
           className="
-            fixed
-            inset-0
-            z-[300]
-
-            flex
-            items-center
-            justify-center
-
-            bg-black/70
-            backdrop-blur-sm
-
-            px-3
-            py-4
-
-            sm:px-5
-            sm:py-6
-
-            md:px-8
-
+            fixed inset-0 z-[300]
+            flex items-center justify-center
+            bg-black/70 backdrop-blur-sm
+            px-3 py-4 sm:px-5 sm:py-6 md:px-8
             animate-[contactOverlay_0.25s_ease-out]
           "
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label="தொடர்பு"
+          aria-label="தொடர்பு மற்றும் திருமண மண்டப விவரங்கள்"
         >
-          {/* =================================================
-              CONTACT CARD
-          ================================================== */}
+          {/* OUTER GOLD CARD */}
 
           <div
             className="
-              relative
-
+              relative w-full max-w-[94vw]
               max-h-[calc(100dvh-2rem)]
-              w-full
-              max-w-[94vw]
-
-              overflow-y-auto
-              overscroll-contain
-
+              overflow-y-auto overscroll-contain
               rounded-[1.4rem]
-
-              bg-gradient-to-b
-              from-gold-light
-              via-gold
-              to-gold-deep
-
+              bg-gradient-to-b from-gold-light via-gold to-gold-deep
               p-[3px]
-
               shadow-[0_35px_90px_rgba(0,0,0,0.8)]
-
               animate-[contactCardIn_0.3s_ease-out]
-
-              sm:max-h-[90vh]
-              sm:max-w-2xl
+              sm:max-h-[90vh] sm:max-w-2xl
               sm:rounded-[1.8rem]
             "
             onClick={(event) => event.stopPropagation()}
           >
-            {/* =================================================
-                INNER CARD
-            ================================================== */}
+            {/* INNER CARD */}
 
             <div
               className="
-                gold-double-frame
-                paper-texture
-
-                relative
-                overflow-hidden
-
+                gold-double-frame paper-texture
+                relative overflow-hidden
                 rounded-[calc(1.4rem-3px)]
-
-                border
-                border-gold-deep/40
-
-                px-4
-                py-6
-
-                text-center
-
+                border border-gold-deep/40
+                px-4 py-6 text-center
                 sm:rounded-[calc(1.8rem-3px)]
-                sm:px-8
-                sm:py-9
+                sm:px-8 sm:py-9
               "
             >
-              {/* =================================================
-                  BACKGROUND GLOW
-              ================================================== */}
+              {/* BACKGROUND GLOW */}
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none
-                  absolute
-                  inset-x-0
-                  top-0
-                  h-40
-
+                  pointer-events-none absolute inset-x-0 top-0 h-40
                   bg-[radial-gradient(70%_100%_at_50%_0%,rgba(217,190,124,0.18),transparent)]
                 "
               />
 
-              {/* =================================================
-                  CORNER DECORATIONS
-              ================================================== */}
-
-              {/* Top Left */}
+              {/* CORNER DECORATIONS */}
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none
-                  absolute
-
-                  left-3
-                  top-3
-
-                  h-10
-                  w-10
-
-                  border-l
-                  border-t
-                  border-gold-deep/40
-
-                  sm:left-5
-                  sm:top-5
-                  sm:h-14
-                  sm:w-14
+                  pointer-events-none absolute left-3 top-3
+                  h-10 w-10 border-l border-t border-gold-deep/40
+                  sm:left-5 sm:top-5 sm:h-14 sm:w-14
                 "
               />
-
-              {/* Top Right */}
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none
-                  absolute
-
-                  right-3
-                  top-3
-
-                  h-10
-                  w-10
-
-                  border-r
-                  border-t
-                  border-gold-deep/40
-
-                  sm:right-5
-                  sm:top-5
-                  sm:h-14
-                  sm:w-14
+                  pointer-events-none absolute right-3 top-3
+                  h-10 w-10 border-r border-t border-gold-deep/40
+                  sm:right-5 sm:top-5 sm:h-14 sm:w-14
                 "
               />
-
-              {/* Bottom Left */}
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none
-                  absolute
-
-                  bottom-3
-                  left-3
-
-                  h-10
-                  w-10
-
-                  border-b
-                  border-l
-                  border-gold-deep/40
-
-                  sm:bottom-5
-                  sm:left-5
-                  sm:h-14
-                  sm:w-14
+                  pointer-events-none absolute bottom-3 left-3
+                  h-10 w-10 border-b border-l border-gold-deep/40
+                  sm:bottom-5 sm:left-5 sm:h-14 sm:w-14
                 "
               />
-
-              {/* Bottom Right */}
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none
-                  absolute
-
-                  bottom-3
-                  right-3
-
-                  h-10
-                  w-10
-
-                  border-b
-                  border-r
-                  border-gold-deep/40
-
-                  sm:bottom-5
-                  sm:right-5
-                  sm:h-14
-                  sm:w-14
+                  pointer-events-none absolute bottom-3 right-3
+                  h-10 w-10 border-b border-r border-gold-deep/40
+                  sm:bottom-5 sm:right-5 sm:h-14 sm:w-14
                 "
               />
 
-              {/* =================================================
-                  CLOSE BUTTON
-              ================================================== */}
+              {/* CLOSE BUTTON */}
 
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="மூடு"
                 className="
-                  absolute
-
-                  right-3
-                  top-3
-
-                  z-30
-
-                  flex
-                  h-9
-                  w-9
-
-                  items-center
-                  justify-center
-
-                  rounded-full
-
-                  border
-                  border-gold-deep/50
-
-                  bg-ivory
-
-                  text-maroon
-
-                  shadow-md
-
-                  transition-all
-                  duration-300
-
-                  hover:rotate-90
-                  hover:bg-white
-
-                  active:scale-90
-
-                  touch-manipulation
-
+                  absolute right-3 top-3 z-30
+                  flex h-9 w-9 items-center justify-center
+                  rounded-full border border-gold-deep/50
+                  bg-ivory text-maroon shadow-md
+                  transition-all duration-300
+                  hover:rotate-90 hover:bg-white
+                  active:scale-90 touch-manipulation
                   focus:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-gold-deep
-
-                  sm:right-5
-                  sm:top-5
-                  sm:h-10
-                  sm:w-10
+                  focus-visible:ring-2 focus-visible:ring-gold-deep
+                  sm:right-5 sm:top-5 sm:h-10 sm:w-10
                 "
               >
                 <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
 
-              {/* =================================================
-                  CONTENT
-              ================================================== */}
+              {/* MAIN CONTENT */}
 
               <div className="relative">
-                {/* =================================================
-                    TOP DIVIDER
-                ================================================== */}
+                {/* TOP DIVIDER */}
 
                 <div className="flex justify-center">
                   <GoldDivider
@@ -443,362 +233,191 @@ export default function ContactButton({
                   />
                 </div>
 
-                {/* =================================================
-                    HEADING
-                ================================================== */}
+                {/* HEADING */}
 
                 <div className="mt-4">
-                  <p
-                    className="
-                      font-tamil
-                      text-2xl
-                      font-bold
-                      text-maroon
-
-                      sm:text-3xl
-                    "
-                  >
+                  <p className="font-tamil text-2xl font-bold text-maroon sm:text-3xl">
                     தொடர்புக்கு
                   </p>
 
-                  <p
-                    className="
-                      mt-1
-                      font-latin
-                      text-[0.6rem]
-                      font-semibold
-                      uppercase
-                      tracking-[0.4em]
-                      text-gold-deep
-                    "
-                  >
+                  <p className="mt-1 font-latin text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-gold-deep">
                     Contact
                   </p>
                 </div>
 
-                {/* Small Divider */}
-
                 <div className="mx-auto mt-4 h-px w-14 bg-gold/60" />
 
-                {/* =================================================
-                    CONTACT PEOPLE
-                ================================================== */}
+                {/* CONTACT CARDS */}
 
-                <div
-                  className="
-                    mt-6
-                    grid
-                    grid-cols-1
-                    gap-4
-
-                    sm:grid-cols-2
-                    sm:gap-5
-                  "
-                >
-                  {/* =================================================
-                      VISHAL KUMAR
-                  ================================================== */}
-
-                  <div
-                    className="
-                      group
-
-                      rounded-2xl
-
-                      border
-                      border-gold/45
-
-                      bg-ivory-deep/70
-
-                      px-4
-                      py-5
-
-                      transition-all
-                      duration-300
-
-                      hover:-translate-y-1
-                      hover:bg-ivory
-                      hover:shadow-[0_15px_35px_-18px_rgba(176,141,60,0.65)]
-                    "
-                  >
-                    <span
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+                  {contacts.map((contact) => (
+                    <div
+                      key={contact.tel}
                       className="
-                        mx-auto
-
-                        flex
-                        h-10
-                        w-10
-
-                        items-center
-                        justify-center
-
-                        rounded-full
-
-                        border
-                        border-gold/55
-
-                        bg-ivory
-
-                        text-gold-deep
-
-                        shadow-[inset_0_2px_6px_rgba(176,141,60,0.2)]
+                        group rounded-2xl
+                        border border-gold/45
+                        bg-ivory-deep/70
+                        px-4 py-5
+                        transition-all duration-300
+                        hover:-translate-y-1 hover:bg-ivory
+                        hover:shadow-[0_15px_35px_-18px_rgba(176,141,60,0.65)]
                       "
                     >
-                      <Phone className="h-4 w-4" />
-                    </span>
+                      <span
+                        className="
+                          mx-auto flex h-10 w-10
+                          items-center justify-center
+                          rounded-full border border-gold/55
+                          bg-ivory text-gold-deep
+                          shadow-[inset_0_2px_6px_rgba(176,141,60,0.2)]
+                        "
+                      >
+                        <Phone className="h-4 w-4" />
+                      </span>
 
-                    <p
-                      className="
-                        mt-3
-                        font-latin
-                        text-base
-                        font-bold
-                        text-maroon
+                      <p className="mt-3 font-latin text-base font-bold text-maroon sm:text-lg">
+                        {contact.name}
+                      </p>
 
-                        sm:text-lg
-                      "
-                    >
-                      Vishal Kumar
-                    </p>
+                      <p className="mt-1 font-tamil text-xs font-semibold text-gold-deep">
+                        {contact.roleTamil}
+                      </p>
 
-                    <p
-                      className="
-                        mt-1
-                        font-tamil
-                        text-xs
-                        font-semibold
-                        text-gold-deep
-                      "
-                    >
-                      மணமகன் சகோதரர்
-                    </p>
+                      <p className="mt-1 font-latin text-xs text-ink/55">
+                        {contact.roleEnglish}
+                      </p>
 
-                    <p
-                      className="
-                        mt-1
-                        font-latin
-                        text-xs
-                        text-ink/55
-                      "
-                    >
-                      Brother of Groom
-                    </p>
+                      <p className="mt-2 font-latin text-sm font-bold tracking-wide text-maroon">
+                        {contact.phone}
+                      </p>
 
-                    <p
-                      className="
-                        mt-2
-                        font-latin
-                        text-sm
-                        font-bold
-                        tracking-wide
-                        text-maroon
-                      "
-                    >
-                      +91 90250 10393
-                    </p>
+                      <a
+                        href={`tel:${contact.tel}`}
+                        className="
+                          mt-4 inline-flex min-h-[44px]
+                          items-center justify-center gap-2
+                          rounded-full border border-gold-deep
+                          bg-maroon px-5 py-2
+                          font-latin text-[0.65rem] font-semibold
+                          uppercase tracking-[0.15em]
+                          text-gold-light
+                          shadow-[0_6px_18px_-8px_rgba(0,0,0,0.6)]
+                          transition-all duration-300
+                          hover:-translate-y-0.5 hover:bg-maroon/90
+                          active:scale-95 touch-manipulation
+                        "
+                      >
+                        <Phone className="h-3.5 w-3.5" />
+                        Call Now
+                      </a>
+                    </div>
+                  ))}
+                </div>
 
-                    <a
-                      href="tel:+919025010393"
-                      className="
-                        mt-4
+                {/* WEDDING VENUE SECTION */}
 
-                        inline-flex
-                        min-h-[44px]
-
-                        items-center
-                        justify-center
-                        gap-2
-
-                        rounded-full
-
-                        border
-                        border-gold-deep
-
-                        bg-maroon
-
-                        px-5
-                        py-2
-
-                        font-latin
-                        text-[0.65rem]
-                        font-semibold
-                        uppercase
-                        tracking-[0.15em]
-
-                        text-gold-light
-
-                        shadow-[0_6px_18px_-8px_rgba(0,0,0,0.6)]
-
-                        transition-all
-                        duration-300
-
-                        hover:-translate-y-0.5
-                        hover:bg-maroon/90
-
-                        active:scale-95
-
-                        touch-manipulation
-                      "
-                    >
-                      <Phone className="h-3.5 w-3.5" />
-                      Call Now
-                    </a>
+                <div className="mt-7">
+                  <div className="flex justify-center">
+                    <GoldDivider
+                      motif="diamond"
+                      className="text-gold-deep/70"
+                      widthClass="w-24 sm:w-32"
+                    />
                   </div>
 
-                  {/* =================================================
-                      KARTHIKEYAN
-                  ================================================== */}
+                  {/* VENUE HEADING */}
+
+                  <div className="mt-5">
+                    <span
+                      className="
+                        mx-auto flex h-11 w-11
+                        items-center justify-center
+                        rounded-full border border-gold/60
+                        bg-ivory text-gold-deep shadow-sm
+                      "
+                    >
+                      <MapPin className="h-5 w-5" />
+                    </span>
+
+                    <p className="mt-3 font-tamil text-xl font-bold text-maroon sm:text-2xl">
+                      திருமண மண்டபம்
+                    </p>
+
+                    <p className="mt-1 font-latin text-[0.6rem] font-semibold uppercase tracking-[0.35em] text-gold-deep">
+                      Wedding Venue
+                    </p>
+                  </div>
+
+                  {/* VENUE CARD */}
 
                   <div
                     className="
-                      group
-
-                      rounded-2xl
-
-                      border
-                      border-gold/45
-
+                      mx-auto mt-5 max-w-xl
+                      rounded-2xl border border-gold/45
                       bg-ivory-deep/70
-
-                      px-4
-                      py-5
-
-                      transition-all
-                      duration-300
-
-                      hover:-translate-y-1
+                      px-4 py-5 sm:px-6 sm:py-6
+                      transition-all duration-300
                       hover:bg-ivory
                       hover:shadow-[0_15px_35px_-18px_rgba(176,141,60,0.65)]
                     "
                   >
                     <span
                       className="
-                        mx-auto
-
-                        flex
-                        h-10
-                        w-10
-
-                        items-center
-                        justify-center
-
-                        rounded-full
-
-                        border
-                        border-gold/55
-
-                        bg-ivory
-
-                        text-gold-deep
-
-                        shadow-[inset_0_2px_6px_rgba(176,141,60,0.2)]
+                        mx-auto flex h-10 w-10
+                        items-center justify-center
+                        rounded-full border border-gold/55
+                        bg-ivory text-gold-deep
                       "
                     >
-                      <Phone className="h-4 w-4" />
+                      <MapPin className="h-4 w-4" />
                     </span>
 
-                    <p
-                      className="
-                        mt-3
-                        font-latin
-                        text-base
-                        font-bold
-                        text-maroon
+                    <h3 className="mt-3 font-tamil text-lg font-bold leading-relaxed text-maroon sm:text-xl">
+                      புது சூரங்குடி திருமண மண்டபம்
+                    </h3>
 
-                        sm:text-lg
-                      "
-                    >
-                      Karthikeyan
-                    </p>
+                    <div className="mt-3 flex items-start justify-center gap-2">
+                      <MapPin className="mt-1 h-4 w-4 shrink-0 text-gold-deep" />
 
-                    <p
-                      className="
-                        mt-1
-                        font-tamil
-                        text-xs
-                        font-semibold
-                        text-gold-deep
-                      "
-                    >
-                      மணமகள் சகோதரர்
-                    </p>
+                      <p className="font-tamil text-sm leading-7 text-ink/75">
+                        புது சூரங்குடி
+                      </p>
+                    </div>
 
-                    <p
-                      className="
-                        mt-1
-                        font-latin
-                        text-xs
-                        text-ink/55
-                      "
-                    >
-                      Brother of Bride
-                    </p>
-
-                    <p
-                      className="
-                        mt-2
-                        font-latin
-                        text-sm
-                        font-bold
-                        tracking-wide
-                        text-maroon
-                      "
-                    >
-                      +91 95005 21536
-                    </p>
+                    {/* GOOGLE MAPS BUTTON */}
 
                     <a
-                      href="tel:+919500521536"
+                      href={venueMapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="
-                        mt-4
-
-                        inline-flex
-                        min-h-[44px]
-
-                        items-center
-                        justify-center
-                        gap-2
-
-                        rounded-full
-
-                        border
-                        border-gold-deep
-
-                        bg-maroon
-
-                        px-5
-                        py-2
-
-                        font-latin
-                        text-[0.65rem]
-                        font-semibold
-                        uppercase
-                        tracking-[0.15em]
-
+                        mt-5 inline-flex min-h-[46px]
+                        items-center justify-center gap-2
+                        rounded-full border border-gold-deep
+                        bg-maroon px-6 py-3
+                        font-latin text-xs font-semibold
+                        uppercase tracking-[0.12em]
                         text-gold-light
-
                         shadow-[0_6px_18px_-8px_rgba(0,0,0,0.6)]
-
-                        transition-all
-                        duration-300
-
-                        hover:-translate-y-0.5
-                        hover:bg-maroon/90
-
-                        active:scale-95
-
-                        touch-manipulation
+                        transition-all duration-300
+                        hover:-translate-y-0.5 hover:bg-maroon/90
+                        active:scale-95 touch-manipulation
+                        focus-visible:outline-none
+                        focus-visible:ring-2
+                        focus-visible:ring-gold-deep
                       "
                     >
-                      <Phone className="h-3.5 w-3.5" />
-                      Call Now
+                      <Navigation className="h-4 w-4" />
+                      Get Directions
                     </a>
+
+                    <p className="mt-3 font-latin text-[10px] leading-relaxed text-ink/50">
+                      Open the venue search in Google Maps
+                    </p>
                   </div>
                 </div>
 
-                {/* =================================================
-                    BOTTOM DIVIDER
-                ================================================== */}
+                {/* BOTTOM DIVIDER */}
 
                 <div className="mt-6 flex justify-center">
                   <GoldDivider
@@ -812,9 +431,7 @@ export default function ContactButton({
         </div>
       )}
 
-      {/* =====================================================
-          ANIMATIONS
-      ====================================================== */}
+      {/* ANIMATIONS */}
 
       <style>{`
         @keyframes contactOverlay {

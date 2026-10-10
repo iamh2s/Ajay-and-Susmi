@@ -6,11 +6,12 @@ import CoupleSection from "./components/CoupleSection";
 import FamilySection from "./components/FamilySection";
 import FinalSection from "./components/FinalSection";
 import GallerySection from "./components/GallerySection";
+import Guide from "./components/Guide";
 import HeroSection from "./components/HeroSection";
 import InvitationIntro from "./components/InvitationIntro";
 import InvitationSection from "./components/InvitationSection";
 import MusicPlayer from "./components/MusicPlayer";
-import ScrollHint from "./components/ScrollHint";
+// import ScrollHint from "./components/ScrollHint";
 import SideNavigation from "./components/SideNavigation";
 import StorySection from "./components/StorySection";
 import ContactButton from "./components/Contact";
@@ -18,26 +19,17 @@ import { SvgDefs } from "./components/decor";
 
 export default function App() {
   const [opened, setOpened] = useState(false);
-  const [showContact, setShowContact] = useState(false);
 
-  /* =========================================================
-     OPEN INVITATION
-  ========================================================= */
-
+  // Open invitation
   const handleOpenStart = useCallback(() => {
-    window.dispatchEvent(
-      new CustomEvent("wedding:open")
-    );
+    window.dispatchEvent(new CustomEvent("wedding:open"));
   }, []);
 
   const handleOpened = useCallback(() => {
     setOpened(true);
   }, []);
 
-  /* =========================================================
-     LOCK PAGE SCROLL WHILE INTRO IS OPEN
-  ========================================================= */
-
+  // Lock page scrolling while intro is open
   useEffect(() => {
     document.documentElement.classList.toggle(
       "scroll-locked",
@@ -51,61 +43,12 @@ export default function App() {
     };
   }, [opened]);
 
-  /* =========================================================
-     CONTACT VISIBILITY
-
-     SAME TRIGGER AS SIDE NAVIGATION
-
-     SideNavigation:
-       window.scrollY > window.innerHeight * 0.55
-
-     Contact:
-       window.scrollY > window.innerHeight * 0.55
-  ========================================================= */
-
-  useEffect(() => {
-    if (!opened) {
-      setShowContact(false);
-      return;
-    }
-
-    const handleScroll = () => {
-      setShowContact(
-        window.scrollY > window.innerHeight * 0.55
-      );
-    };
-
-    // Check immediately
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    window.addEventListener("resize", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, [opened]);
-
-  /* =========================================================
-     RENDER
-  ========================================================= */
-
   return (
     <>
-      {/* =====================================================
-          SVG DEFINITIONS
-      ===================================================== */}
-
+      {/* SVG DEFINITIONS */}
       <SvgDefs />
 
-      {/* =====================================================
-          INVITATION INTRO
-      ===================================================== */}
-
+      {/* INVITATION INTRO */}
       <AnimatePresence>
         {!opened && (
           <InvitationIntro
@@ -116,10 +59,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* =====================================================
-          MAIN CONTENT
-      ===================================================== */}
-
+      {/* MAIN CONTENT */}
       <main id="main">
         <HeroSection active={opened} />
 
@@ -140,46 +80,20 @@ export default function App() {
         <FinalSection />
       </main>
 
-      {/* =====================================================
-          MUSIC
-      ===================================================== */}
-
+      {/* MUSIC */}
       <MusicPlayer opened={opened} />
 
-      {/* =====================================================
-          FLOATING UI
-      ===================================================== */}
-
+      {/* FLOATING UI */}
       {opened && (
         <>
-          {/* =================================================
-              SCROLL HINT
-          ================================================= */}
-
-          <ScrollHint />
-
-          {/* =================================================
-              RIGHT SIDE NAVIGATION
-
-              This already handles its own animation.
-          ================================================= */}
-
+          {/* Navigation visible from Hero onward */}
           <SideNavigation />
 
-          {/* =================================================
-              LEFT CONTACT BUTTON
+          {/* Contact button visible from Hero onward */}
+          <ContactButton visible={true} />
 
-              IMPORTANT:
-              No wrapper here.
-
-              ContactButton itself handles:
-              - fixed positioning
-              - left positioning
-              - animation
-              - opacity
-          ================================================= */}
-
-          <ContactButton visible={showContact} />
+          {/* Responsive bilingual website guide */}
+          <Guide />
         </>
       )}
     </>
