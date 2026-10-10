@@ -1,10 +1,11 @@
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
 
-import { Heart } from "lucide-react";
+import { ArrowDown, ArrowRight, Heart } from "lucide-react";
 import { gsap } from "../lib/gsap";
 
 import data from "@/data/weddingData.json";
@@ -200,6 +201,33 @@ export default function GallerySection() {
   const track = useRef<HTMLDivElement>(null);
 
   const [extra, setExtra] = useState(0);
+
+  /* =======================================================
+     SHOW SCROLL HINT ONLY BEFORE THE IMAGES START MOVING
+  ======================================================= */
+
+  const [atStart, setAtStart] = useState(true);
+
+  useEffect(() => {
+    const section = root.current;
+
+    if (!section) return;
+
+    const update = () => {
+      const scrolled = -section.getBoundingClientRect().top;
+      setAtStart(scrolled < 60);
+    };
+
+    update();
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   /* =======================================================
      MEASURE HORIZONTAL DISTANCE
@@ -423,21 +451,11 @@ export default function GallerySection() {
   useLayoutEffect(() => {
     if (extra <= 0) return;
 
-    const refresh = () => {
-      requestAnimationFrame(() => {
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new Event("resize")
-          );
-        }
-      });
-    };
-
-    refresh();
-
-    return () => {
-      /* Nothing required */
-    };
+    requestAnimationFrame(() => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("resize"));
+      }
+    });
   }, [extra]);
 
   /* =======================================================
@@ -660,8 +678,8 @@ export default function GallerySection() {
               className="
                 mt-7
                 flex
-                items-center
-                gap-3
+                flex-col
+                gap-1
                 font-latin
                 text-[8px]
                 uppercase
@@ -669,7 +687,14 @@ export default function GallerySection() {
                 text-[#d8ad55]/75
               "
             >
-              Keep scrolling Down to Explore all images ↓
+              <span>Scroll down to see all images →</span>
+
+              <span
+                lang="ta"
+                className="font-tamil text-[11px] normal-case tracking-normal"
+              >
+                எல்லா படங்களையும் காண கீழே ஸ்க்ரோல் செய்யுங்கள்
+              </span>
             </div>
           </div>
 
@@ -740,37 +765,69 @@ export default function GallerySection() {
         </div>
 
         {/* =================================================
-            SCROLL LABEL
+            SCROLL DOWN HINT
         ================================================= */}
 
         <div
-          className="
-            pointer-events-none
-            absolute
-            bottom-14
-            left-1/2
-            z-30
-            flex
-            -translate-x-1/2
-            items-center
-            gap-3
-          "
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-x-0 z-30 flex justify-center px-3",
+            "bottom-12 sm:bottom-14",
+            "transition-all duration-500",
+            atStart
+              ? "translate-y-0 opacity-100"
+              : "translate-y-3 opacity-0"
+          )}
         >
-          <span className="h-px w-8 bg-[#d8ad55]/25" />
-
-          <span
+          <div
             className="
-              font-latin
-              text-[7px]
-              uppercase
-              tracking-[0.45em]
-              text-[#f7ead7]/35
+              flex items-center gap-3
+              rounded-full
+              border border-[#d8ad55]/50
+              bg-[#080304]/80
+              px-4 py-2.5
+              shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]
+              backdrop-blur-md
+              sm:gap-4 sm:px-6 sm:py-3
             "
           >
-            Scroll
-          </span>
+            {/* Bouncing arrow */}
+            <span
+              className="
+                flex h-9 w-9 shrink-0 items-center justify-center
+                rounded-full border border-[#d8ad55]/70
+                bg-[#d8ad55]/15 text-[#f0d38a]
+                sm:h-10 sm:w-10
+              "
+            >
+              <ArrowDown className="h-4 w-4 animate-bounce sm:h-5 sm:w-5" />
+            </span>
 
-          <span className="h-px w-8 bg-[#d8ad55]/25" />
+            {/* Words */}
+            <div className="min-w-0 text-left">
+              <p
+                className="
+                  font-latin text-[9px] font-semibold uppercase
+                  tracking-[0.25em] text-[#f0d38a]
+                  sm:text-[11px]
+                "
+              >
+                Scroll down
+              </p>
+
+              <p
+                lang="ta"
+                className="mt-0.5 font-tamil text-[11px] text-[#f7ead7] sm:text-xs"
+              >
+                கீழே ஸ்க்ரோல் செய்யுங்கள்
+              </p>
+
+              <p className="mt-1 flex items-center gap-1.5 font-latin text-[9px] italic text-[#f7ead7]/60 sm:text-[10px]">
+                images move sideways
+                <ArrowRight className="h-3 w-3 animate-pulse text-[#d8ad55]" />
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
