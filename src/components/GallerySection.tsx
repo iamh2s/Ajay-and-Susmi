@@ -6,7 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, Heart } from "lucide-react";
+
+import { ArrowLeft, ArrowRight, Heart } from "lucide-react";
 import { gsap } from "../lib/gsap";
 import data from "@/data/weddingData.json";
 import { GoldDivider } from "./decor";
@@ -17,21 +18,29 @@ type GalleryImage = {
   alt: string;
 };
 
+/* =========================================================
+   FILM HOLES
+========================================================= */
+
 function FilmHoles() {
   return (
     <div
       aria-hidden="true"
       className="flex w-full justify-between overflow-hidden px-3"
     >
-      {Array.from({ length: 34 }).map((_, i) => (
+      {Array.from({ length: 34 }).map((_, index) => (
         <span
-          key={i}
+          key={index}
           className="h-[5px] w-[11px] shrink-0 rounded-[2px] bg-[#f4e7cf]/10 sm:h-[6px] sm:w-[14px] md:h-[7px] md:w-[16px]"
         />
       ))}
     </div>
   );
 }
+
+/* =========================================================
+   FILM FRAME
+========================================================= */
 
 function FilmFrame({
   image,
@@ -46,6 +55,7 @@ function FilmFrame({
 
   return (
     <figure
+      data-gallery-image={index}
       className={cn(
         "relative shrink-0",
         "w-[78vw] sm:w-[62vw] md:w-[47vw]",
@@ -103,6 +113,10 @@ function FilmFrame({
   );
 }
 
+/* =========================================================
+   MAIN GALLERY
+========================================================= */
+
 export default function GallerySection() {
   const { gallery } = data;
   const images = gallery.images as GalleryImage[];
@@ -112,30 +126,11 @@ export default function GallerySection() {
 
   const [extra, setExtra] = useState(0);
   const [currentImage, setCurrentImage] = useState(0);
-  const [atStart, setAtStart] = useState(true);
 
-  // Show the scroll hint near the beginning of the gallery.
-  useEffect(() => {
-    const section = root.current;
-    if (!section) return;
+  /* =======================================================
+     MEASURE FILMSTRIP WIDTH
+  ======================================================= */
 
-    const update = () => {
-      const scrolled = -section.getBoundingClientRect().top;
-      setAtStart(scrolled < 60);
-    };
-
-    update();
-
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
-
-  // Measure the width needed for the horizontal filmstrip.
   useLayoutEffect(() => {
     const element = track.current;
     if (!element) return;
@@ -182,6 +177,7 @@ export default function GallerySection() {
     return () => {
       cancelAnimationFrame(animationFrame);
       observer.disconnect();
+
       window.removeEventListener("resize", measure);
 
       imageElements.forEach((image) => {
@@ -190,21 +186,27 @@ export default function GallerySection() {
     };
   }, [images.length]);
 
-  // Keep button navigation synchronized with GSAP's scroll range.
+  /* =======================================================
+     MATCH GSAP SCROLL DISTANCE
+  ======================================================= */
+
   const getScrollDistance = useCallback(() => {
     const width = window.innerWidth;
 
-    const additionalDistance =
+    const extraViewport =
       width >= 1024
         ? window.innerHeight * 0.35
         : width >= 640
           ? window.innerHeight * 0.25
           : window.innerHeight * 0.18;
 
-    return extra + additionalDistance;
+    return extra + extraViewport;
   }, [extra]);
 
-  // Move to the selected image using the page's scroll position.
+  /* =======================================================
+     PREVIOUS / NEXT IMAGE NAVIGATION
+  ======================================================= */
+
   const goToImage = useCallback(
     (nextIndex: number) => {
       const section = root.current;
@@ -213,7 +215,9 @@ export default function GallerySection() {
       if (!section || !element || images.length === 0) return;
 
       const frames = Array.from(
-        element.querySelectorAll<HTMLElement>("figure")
+        element.querySelectorAll<HTMLElement>(
+          "[data-gallery-image]"
+        )
       );
 
       if (!frames.length) return;
@@ -255,7 +259,10 @@ export default function GallerySection() {
     [extra, getScrollDistance, images.length]
   );
 
-  // Update the active image when the user scrolls manually.
+  /* =======================================================
+     SYNCHRONIZE ACTIVE IMAGE DURING MANUAL SCROLLING
+  ======================================================= */
+
   useEffect(() => {
     let frameId = 0;
 
@@ -266,12 +273,19 @@ export default function GallerySection() {
         const element = track.current;
         const section = root.current;
 
-        if (!element || !section || !images.length || extra <= 0) {
+        if (
+          !element ||
+          !section ||
+          images.length === 0 ||
+          extra <= 0
+        ) {
           return;
         }
 
         const frames = Array.from(
-          element.querySelectorAll<HTMLElement>("figure")
+          element.querySelectorAll<HTMLElement>(
+            "[data-gallery-image]"
+          )
         );
 
         if (!frames.length) return;
@@ -283,7 +297,8 @@ export default function GallerySection() {
           0,
           Math.min(
             1,
-            (window.scrollY - sectionTop) / getScrollDistance()
+            (window.scrollY - sectionTop) /
+              getScrollDistance()
           )
         );
 
@@ -299,7 +314,9 @@ export default function GallerySection() {
             frame.offsetWidth / 2 -
             translateX;
 
-          const difference = Math.abs(center - viewportCenter);
+          const difference = Math.abs(
+            center - viewportCenter
+          );
 
           if (difference < nearestDistance) {
             nearestDistance = difference;
@@ -308,7 +325,9 @@ export default function GallerySection() {
         });
 
         setCurrentImage((previous) =>
-          previous === nearestIndex ? previous : nearestIndex
+          previous === nearestIndex
+            ? previous
+            : nearestIndex
         );
       });
     };
@@ -318,16 +337,28 @@ export default function GallerySection() {
     window.addEventListener("scroll", updateCurrentImage, {
       passive: true,
     });
+
     window.addEventListener("resize", updateCurrentImage);
 
     return () => {
       cancelAnimationFrame(frameId);
-      window.removeEventListener("scroll", updateCurrentImage);
-      window.removeEventListener("resize", updateCurrentImage);
+
+      window.removeEventListener(
+        "scroll",
+        updateCurrentImage
+      );
+
+      window.removeEventListener(
+        "resize",
+        updateCurrentImage
+      );
     };
   }, [extra, getScrollDistance, images.length]);
 
-  // GSAP horizontal filmstrip animation.
+  /* =======================================================
+     GSAP HORIZONTAL SCROLL
+  ======================================================= */
+
   useLayoutEffect(() => {
     const section = root.current;
     const element = track.current;
@@ -337,8 +368,12 @@ export default function GallerySection() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
+      // Desktop
       mm.add("(min-width: 1024px)", () => {
-        gsap.set(element, { x: 0, force3D: true });
+        gsap.set(element, {
+          x: 0,
+          force3D: true,
+        });
 
         gsap.to(element, {
           x: -extra,
@@ -358,10 +393,14 @@ export default function GallerySection() {
         });
       });
 
+      // Tablet
       mm.add(
         "(min-width: 640px) and (max-width: 1023px)",
         () => {
-          gsap.set(element, { x: 0, force3D: true });
+          gsap.set(element, {
+            x: 0,
+            force3D: true,
+          });
 
           gsap.to(element, {
             x: -extra,
@@ -382,8 +421,12 @@ export default function GallerySection() {
         }
       );
 
+      // Mobile
       mm.add("(max-width: 639px)", () => {
-        gsap.set(element, { x: 0, force3D: true });
+        gsap.set(element, {
+          x: 0,
+          force3D: true,
+        });
 
         gsap.to(element, {
           x: -extra,
@@ -403,13 +446,20 @@ export default function GallerySection() {
         });
       });
 
-      return () => mm.revert();
+      return () => {
+        mm.revert();
+      };
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+    };
   }, [extra]);
 
-  // Refresh measurements after the track distance changes.
+  /* =======================================================
+     REFRESH SCROLLTRIGGER AFTER MEASUREMENT CHANGES
+  ======================================================= */
+
   useLayoutEffect(() => {
     if (extra <= 0) return;
 
@@ -420,10 +470,18 @@ export default function GallerySection() {
     return () => cancelAnimationFrame(frame);
   }, [extra]);
 
+  /* =======================================================
+     SECTION HEIGHT
+  ======================================================= */
+
   const sectionHeight =
     extra > 0
       ? `calc(100svh + ${extra + 180}px)`
       : "100svh";
+
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
     <section
@@ -434,7 +492,8 @@ export default function GallerySection() {
       style={{ height: sectionHeight }}
     >
       <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden">
-        {/* Top film band */}
+        {/* TOP FILM BAND */}
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 z-30 h-9 border-b border-[#f7ead7]/10 bg-[#080304] sm:h-10"
@@ -444,7 +503,8 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* Bottom film band */}
+        {/* BOTTOM FILM BAND */}
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-9 border-t border-[#f7ead7]/10 bg-[#080304] sm:h-10"
@@ -454,7 +514,8 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* Background glow */}
+        {/* BACKGROUND GLOW */}
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -473,12 +534,14 @@ export default function GallerySection() {
           }}
         />
 
-        {/* Filmstrip */}
+        {/* FILMSTRIP */}
+
         <div
           ref={track}
           className="relative z-10 flex w-max items-center gap-6 pl-[7vw] pr-[14vw] will-change-transform transform-gpu sm:gap-9 sm:pl-[7vw] sm:pr-[15vw] md:gap-12 lg:gap-16"
         >
-          {/* Intro panel */}
+          {/* INTRO PANEL */}
+
           <div className="w-[78vw] shrink-0 sm:w-[58vw] md:w-[38vw] lg:w-[31vw]">
             <p className="font-latin text-[8px] uppercase tracking-[0.5em] text-[#d8ad55]/80 sm:text-[9px]">
               Our Memories
@@ -504,19 +567,10 @@ export default function GallerySection() {
               Every photograph holds a moment.
               Every moment becomes a memory.
             </p>
-
-            <div className="mt-7 flex flex-col gap-1 font-latin text-[8px] uppercase tracking-[0.4em] text-[#d8ad55]/75">
-              <span>Scroll down to see all images →</span>
-              <span
-                lang="ta"
-                className="font-tamil text-[11px] normal-case tracking-normal"
-              >
-                எல்லா படங்களையும் காண கீழே ஸ்க்ரோல் செய்யுங்கள்
-              </span>
-            </div>
           </div>
 
-          {/* Gallery images */}
+          {/* GALLERY IMAGES */}
+
           {images.map((image, index) => (
             <FilmFrame
               key={`${image.src}-${index}`}
@@ -526,7 +580,8 @@ export default function GallerySection() {
             />
           ))}
 
-          {/* Ending panel */}
+          {/* END PANEL */}
+
           <div className="flex w-[72vw] shrink-0 flex-col items-center justify-center sm:w-[52vw] md:w-[32vw]">
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#d8ad55] to-transparent" />
 
@@ -544,7 +599,8 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* PREVIOUS / NEXT ARROWS — ABOVE THE SCROLL HINT */}
+        {/* PREVIOUS / NEXT ARROWS */}
+
         {images.length > 0 && (
           <div className="pointer-events-none absolute inset-x-3 bottom-28 z-40 flex items-center justify-between sm:inset-x-6 sm:bottom-32 md:inset-x-8">
             <button
@@ -574,43 +630,6 @@ export default function GallerySection() {
             </button>
           </div>
         )}
-
-        {/* Scroll hint */}
-        <div
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute inset-x-0 z-30 flex justify-center px-3",
-            "bottom-12 sm:bottom-14",
-            "transition-all duration-500",
-            atStart
-              ? "translate-y-0 opacity-100"
-              : "translate-y-3 opacity-0"
-          )}
-        >
-          <div className="flex items-center gap-3 rounded-full border border-[#d8ad55]/50 bg-[#080304]/80 px-4 py-2.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md sm:gap-4 sm:px-6 sm:py-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d8ad55]/70 bg-[#d8ad55]/15 text-[#f0d38a] sm:h-10 sm:w-10">
-              <ArrowDown className="h-4 w-4 animate-bounce sm:h-5 sm:w-5" />
-            </span>
-
-            <div className="min-w-0 text-left">
-              <p className="font-latin text-[9px] font-semibold uppercase tracking-[0.25em] text-[#f0d38a] sm:text-[11px]">
-                Scroll down
-              </p>
-
-              <p
-                lang="ta"
-                className="mt-0.5 font-tamil text-[11px] text-[#f7ead7] sm:text-xs"
-              >
-                கீழே ஸ்க்ரோல் செய்யுங்கள்
-              </p>
-
-              <p className="mt-1 flex items-center gap-1.5 font-latin text-[9px] italic text-[#f7ead7]/60 sm:text-[10px]">
-                images move sideways
-                <ArrowRight className="h-3 w-3 animate-pulse text-[#d8ad55]" />
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
