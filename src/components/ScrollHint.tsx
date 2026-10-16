@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function ScrollHint() {
   const reduceMotion = useReducedMotion();
@@ -21,7 +21,7 @@ export default function ScrollHint() {
     }
   }, []);
 
-  // Hide while scrolling and show again after 7 seconds
+  // Hide while scrolling; show a tiny hint after 7 seconds
   useEffect(() => {
     const handleScroll = () => {
       if (footerRef.current) return;
@@ -46,10 +46,9 @@ export default function ScrollHint() {
     };
   }, [clearTimer]);
 
-  // Detect the footer
+  // Detect when the footer enters the viewport
   useEffect(() => {
     const footer = document.getElementById("footer");
-
     if (!footer) return;
 
     const observer = new IntersectionObserver(
@@ -107,43 +106,22 @@ export default function ScrollHint() {
     <motion.div
       initial={false}
       animate={{
-        opacity: visible ? 0.9 : 0,
-        y: visible ? 0 : 6,
+        opacity: visible ? 0.8 : 0,
       }}
       transition={{
-        duration: reduceMotion ? 0 : 0.3,
+        duration: reduceMotion ? 0 : 0.35,
       }}
       aria-hidden={!visible}
       className="
         pointer-events-none
         fixed
-        bottom-[calc(14px+env(safe-area-inset-bottom))]
+        bottom-[calc(12px+env(safe-area-inset-bottom))]
         left-1/2
         z-[9999]
-        flex
         -translate-x-1/2
-        flex-col
-        items-center
-        gap-0.5
-        text-gold-light
-        sm:bottom-5
+        sm:bottom-4
       "
     >
-      {/* Minimal label */}
-      <span
-        className="
-          text-[8px]
-          font-medium
-          uppercase
-          tracking-[0.2em]
-          text-white/90
-          drop-shadow-md
-        "
-      >
-        {footerVisible ? "Go Up" : "Scroll"}
-      </span>
-
-      {/* Small directional arrow */}
       <motion.button
         type="button"
         onClick={footerVisible ? goToTop : undefined}
@@ -153,37 +131,45 @@ export default function ScrollHint() {
         animate={
           visible && !reduceMotion
             ? {
-                y: [0, footerVisible ? -3 : 3, 0],
+                y: footerVisible ? [0, -3, 0] : [0, 4, 0],
+                opacity: [0.55, 1, 0.55],
               }
-            : { y: 0 }
+            : {
+                y: 0,
+                opacity: 0.8,
+              }
         }
         transition={{
-          duration: 1.2,
+          duration: 1.8,
           repeat: visible && !reduceMotion ? Infinity : 0,
           ease: "easeInOut",
         }}
         className="
           pointer-events-auto
           flex
-          h-7
-          w-7
+          h-6
+          w-6
           touch-manipulation
           items-center
           justify-center
           rounded-full
           text-gold-light
-          transition-colors
-          hover:text-white
+          drop-shadow-[0_1px_5px_rgba(212,175,55,0.5)]
           focus-visible:outline-none
           focus-visible:ring-1
           focus-visible:ring-gold-light
-          disabled:cursor-default
         "
       >
         {footerVisible ? (
-          <ArrowUp size={16} strokeWidth={1.6} />
+          <ChevronUp
+            size={17}
+            strokeWidth={1.6}
+          />
         ) : (
-          <ArrowDown size={16} strokeWidth={1.6} />
+          <ChevronDown
+            size={17}
+            strokeWidth={1.6}
+          />
         )}
       </motion.button>
     </motion.div>
