@@ -1,142 +1,75 @@
 
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ScrollHint() {
   const reduceMotion = useReducedMotion();
 
-  const [showHint, setShowHint] = useState(true);
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [footerVisible, setFooterVisible] = useState(false);
 
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const footerRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const footerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-
-  const isFooterVisibleRef = useRef(false);
-  const lastScrollYRef = useRef(0);
-
-  const clearScrollTimer = useCallback(() => {
-    if (scrollTimerRef.current !== null) {
-      clearTimeout(scrollTimerRef.current);
-      scrollTimerRef.current = null;
+  const clearTimer = useCallback(() => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
   }, []);
 
-  const clearFooterTimer = useCallback(() => {
-    if (footerTimerRef.current !== null) {
-      clearTimeout(footerTimerRef.current);
-      footerTimerRef.current = null;
-    }
-  }, []);
-
-  // Schedule the scroll hint after inactivity
-  const scheduleScrollHint = useCallback(() => {
-    clearScrollTimer();
-
-    scrollTimerRef.current = setTimeout(() => {
-      if (
-        !isFooterVisibleRef.current &&
-        !document.hidden
-      ) {
-        setShowHint(true);
-      }
-    }, 7000);
-  }, [clearScrollTimer]);
-
-  // Detect scrolling and hide the hint while the visitor scrolls
+  // Hide while scrolling and show again after 7 seconds
   useEffect(() => {
-    lastScrollYRef.current = window.scrollY;
-
     const handleScroll = () => {
-      const currentY = window.scrollY;
+      if (footerRef.current) return;
 
-      // Ignore tiny scroll changes caused by browser layout shifts
-      if (
-        Math.abs(currentY - lastScrollYRef.current) < 2
-      ) {
-        return;
-      }
+      setVisible(false);
+      clearTimer();
 
-      lastScrollYRef.current = currentY;
-
-      if (isFooterVisibleRef.current) {
-        return;
-      }
-
-      setShowHint(false);
-      scheduleScrollHint();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        clearScrollTimer();
-      } else if (!isFooterVisibleRef.current) {
-        scheduleScrollHint();
-      }
+      timerRef.current = setTimeout(() => {
+        if (!footerRef.current && !document.hidden) {
+          setVisible(true);
+        }
+      }, 7000);
     };
 
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
 
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange
-    );
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-      );
-
-      clearScrollTimer();
+      clearTimer();
     };
-  }, [scheduleScrollHint, clearScrollTimer]);
+  }, [clearTimer]);
 
-  // Detect when the footer enters the viewport
+  // Detect the footer
   useEffect(() => {
     const footer = document.getElementById("footer");
 
-    if (!footer) {
-      console.warn(
-        'ScrollHint: Add id="footer" to your footer section.'
-      );
-      return;
-    }
+    if (!footer) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const visible = entry.isIntersecting;
+        const isVisible = entry.isIntersecting;
 
-        isFooterVisibleRef.current = visible;
-        setIsFooterVisible(visible);
+        footerRef.current = isVisible;
+        setFooterVisible(isVisible);
+        clearTimer();
 
-        clearFooterTimer();
-        clearScrollTimer();
+        if (isVisible) {
+          setVisible(false);
 
-        if (visible) {
-          setShowHint(false);
-
-          footerTimerRef.current = setTimeout(() => {
-            if (
-              isFooterVisibleRef.current &&
-              !document.hidden
-            ) {
-              setShowHint(true);
+          timerRef.current = setTimeout(() => {
+            if (footerRef.current && !document.hidden) {
+              setVisible(true);
             }
           }, 10000);
         } else {
-          setShowHint(false);
-          scheduleScrollHint();
+          setVisible(false);
         }
       },
       {
@@ -149,179 +82,110 @@ export default function ScrollHint() {
 
     return () => {
       observer.disconnect();
-      clearFooterTimer();
+      clearTimer();
     };
-  }, [
-    clearFooterTimer,
-    clearScrollTimer,
-    scheduleScrollHint,
-  ]);
+  }, [clearTimer]);
 
-  // Smoothly return to the top
+  // Return to the top
   const goToTop = () => {
-    clearScrollTimer();
-    clearFooterTimer();
-
-    isFooterVisibleRef.current = false;
-    setIsFooterVisible(false);
-    setShowHint(false);
+    clearTimer();
+    footerRef.current = false;
+    setFooterVisible(false);
+    setVisible(false);
 
     window.scrollTo({
       top: 0,
       behavior: reduceMotion ? "auto" : "smooth",
     });
 
-    lastScrollYRef.current = 0;
-
-    scrollTimerRef.current = setTimeout(() => {
-      setShowHint(true);
+    timerRef.current = setTimeout(() => {
+      setVisible(true);
     }, reduceMotion ? 100 : 1200);
   };
-
-  const visible = showHint;
 
   return (
     <motion.div
       initial={false}
       animate={{
-        opacity: visible ? 1 : 0,
-        y: visible ? 0 : 12,
+        opacity: visible ? 0.9 : 0,
+        y: visible ? 0 : 6,
       }}
       transition={{
-        duration: reduceMotion ? 0 : 0.35,
-        ease: [0.22, 1, 0.36, 1],
+        duration: reduceMotion ? 0 : 0.3,
       }}
       aria-hidden={!visible}
       className="
         pointer-events-none
         fixed
-        bottom-[calc(1rem+env(safe-area-inset-bottom))]
+        bottom-[calc(14px+env(safe-area-inset-bottom))]
         left-1/2
         z-[9999]
         flex
         -translate-x-1/2
         flex-col
         items-center
-        gap-2
-        sm:bottom-6
+        gap-0.5
+        text-gold-light
+        sm:bottom-5
       "
     >
-      {/* Direction label */}
+      {/* Minimal label */}
       <span
         className="
-          rounded-full
-          border
-          border-gold-light/25
-          bg-black/45
-          px-3
-          py-1.5
-          font-latin
-          text-[9px]
-          font-semibold
+          text-[8px]
+          font-medium
           uppercase
-          tracking-[0.25em]
-          text-white
-          shadow-lg
-          backdrop-blur-md
-          sm:text-[10px]
+          tracking-[0.2em]
+          text-white/90
+          drop-shadow-md
         "
       >
-        {isFooterVisible ? "Go Up" : "Scroll Down"}
+        {footerVisible ? "Go Up" : "Scroll"}
       </span>
 
-      {/* Direction button */}
+      {/* Small directional arrow */}
       <motion.button
         type="button"
-        onClick={isFooterVisible ? goToTop : undefined}
-        disabled={!isFooterVisible}
-        tabIndex={visible && isFooterVisible ? 0 : -1}
-        aria-label={
-          isFooterVisible ? "Go to top" : "Scroll down"
-        }
+        onClick={footerVisible ? goToTop : undefined}
+        disabled={!footerVisible}
+        tabIndex={visible && footerVisible ? 0 : -1}
+        aria-label={footerVisible ? "Go to top" : "Scroll down"}
         animate={
           visible && !reduceMotion
-            ? isFooterVisible
-              ? { y: [0, -5, 0] }
-              : { y: [0, 6, 0] }
+            ? {
+                y: [0, footerVisible ? -3 : 3, 0],
+              }
             : { y: 0 }
         }
         transition={{
           duration: 1.2,
-          repeat:
-            visible && !reduceMotion ? Infinity : 0,
+          repeat: visible && !reduceMotion ? Infinity : 0,
           ease: "easeInOut",
         }}
         className="
           pointer-events-auto
           flex
-          h-11
-          w-11
+          h-7
+          w-7
           touch-manipulation
           items-center
           justify-center
           rounded-full
-          border
-          border-gold-light/60
-          bg-gradient-to-b
-          from-maroon-deep/90
-          to-black/80
           text-gold-light
-          shadow-[0_0_24px_rgba(212,175,55,0.18)]
-          backdrop-blur-lg
           transition-colors
-          hover:border-gold-light
-          hover:bg-maroon-deep
+          hover:text-white
           focus-visible:outline-none
-          focus-visible:ring-2
+          focus-visible:ring-1
           focus-visible:ring-gold-light
           disabled:cursor-default
-          sm:h-12
-          sm:w-12
         "
       >
-        {isFooterVisible ? (
-          <ArrowUp
-            className="h-5 w-5 sm:h-6 sm:w-6"
-            strokeWidth={1.8}
-          />
+        {footerVisible ? (
+          <ArrowUp size={16} strokeWidth={1.6} />
         ) : (
-          <ArrowDown
-            className="h-5 w-5 sm:h-6 sm:w-6"
-            strokeWidth={1.8}
-          />
+          <ArrowDown size={16} strokeWidth={1.6} />
         )}
       </motion.button>
-
-      {/* Gold directional indicator */}
-      <motion.span
-        animate={
-          visible && !reduceMotion
-            ? isFooterVisible
-              ? {
-                  height: [12, 6, 12],
-                  opacity: [0.8, 0.35, 0.8],
-                }
-              : {
-                  height: [6, 14, 6],
-                  opacity: [0.35, 0.9, 0.35],
-                }
-            : { height: 8, opacity: 0.7 }
-        }
-        transition={{
-          duration: 1.2,
-          repeat:
-            visible && !reduceMotion ? Infinity : 0,
-          ease: "easeInOut",
-        }}
-        className="
-          block
-          w-px
-          bg-gradient-to-b
-          from-gold-light
-          to-transparent
-        "
-      />
     </motion.div>
   );
 }
-
