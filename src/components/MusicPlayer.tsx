@@ -1,3 +1,4 @@
+
 import { Music, Pause } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import data from "@/data/weddingData.json";
@@ -15,18 +16,7 @@ export default function MusicPlayer({
   const [playing, setPlaying] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
 
-  /*
-   * =========================================================
-   * START MUSIC
-   * =========================================================
-   *
-   * This event is dispatched synchronously from the
-   * "Touch to Open" button.
-   *
-   * That is important because the browser considers it
-   * a real user interaction.
-   */
-
+  // Start music when the invitation is opened
   useEffect(() => {
     const handleWeddingOpen = async () => {
       const audio = audioRef.current;
@@ -35,29 +25,17 @@ export default function MusicPlayer({
 
       try {
         audio.currentTime = 0;
-
         await audio.play();
 
         setPlaying(true);
         setUnavailable(false);
       } catch (error) {
-        console.log(
-          "Wedding music autoplay blocked:",
-          error
-        );
-
-        /*
-         * We don't disable the player.
-         * The user can still manually press the music button.
-         */
+        console.log("Wedding music autoplay blocked:", error);
         setPlaying(false);
       }
     };
 
-    window.addEventListener(
-      "wedding:open",
-      handleWeddingOpen
-    );
+    window.addEventListener("wedding:open", handleWeddingOpen);
 
     return () => {
       window.removeEventListener(
@@ -67,12 +45,7 @@ export default function MusicPlayer({
     };
   }, []);
 
-  /*
-   * =========================================================
-   * AUDIO EVENTS
-   * =========================================================
-   */
-
+  // Audio events
   const handlePlay = () => {
     setPlaying(true);
     setUnavailable(false);
@@ -92,42 +65,30 @@ export default function MusicPlayer({
     );
   };
 
-  /*
-   * =========================================================
-   * MANUAL MUSIC BUTTON
-   * =========================================================
-   */
-
+  // Toggle music on and off
   const toggle = async () => {
     const audio = audioRef.current;
 
     if (!audio) return;
 
-    if (playing) {
+    if (!audio.paused) {
       audio.pause();
-      setPlaying(false);
       return;
     }
 
     try {
       await audio.play();
-
-      setPlaying(true);
       setUnavailable(false);
     } catch (error) {
       console.error("Music playback failed:", error);
-
-      setUnavailable(true);
       setPlaying(false);
+      setUnavailable(true);
     }
   };
 
   return (
     <>
-      {/* =====================================================
-          AUDIO
-      ===================================================== */}
-
+      {/* AUDIO */}
       <audio
         ref={audioRef}
         src="/images/music.mp3"
@@ -138,10 +99,7 @@ export default function MusicPlayer({
         onError={handleError}
       />
 
-      {/* =====================================================
-          MUSIC PLAYER
-      ===================================================== */}
-
+      {/* MUSIC PLAYER */}
       <div
         className={cn(
           `
@@ -149,14 +107,11 @@ export default function MusicPlayer({
           bottom-4
           left-4
           z-[9998]
-
           flex
           items-center
           gap-3
-
           transition-all
           duration-500
-
           sm:bottom-6
           sm:left-6
           `,
@@ -165,19 +120,21 @@ export default function MusicPlayer({
             : "pointer-events-none translate-y-4 opacity-0"
         )}
       >
-        {/* =================================================
-            MUSIC BUTTON
-        ================================================= */}
-
+        {/* MUSIC TOGGLE BUTTON */}
         <button
           type="button"
           onClick={toggle}
           aria-label={
             playing
-              ? data.music.labelPause
-              : data.music.labelPlay
+              ? "Tap to turn off music"
+              : "Tap to turn on music"
           }
           aria-pressed={playing}
+          title={
+            playing
+              ? "Tap to turn off music"
+              : "Tap to turn on music"
+          }
           className={cn(
             `
             relative
@@ -187,19 +144,13 @@ export default function MusicPlayer({
             shrink-0
             items-center
             justify-center
-
             overflow-visible
             rounded-full
-
             border
-
             backdrop-blur-md
-
             transition-all
             duration-500
-
             active:scale-95
-
             sm:h-13
             sm:w-13
             `,
@@ -221,6 +172,7 @@ export default function MusicPlayer({
             unavailable && "opacity-60"
           )}
         >
+          {/* Animated music ring */}
           {playing && (
             <svg
               aria-hidden="true"
@@ -259,10 +211,7 @@ export default function MusicPlayer({
           )}
         </button>
 
-        {/* =================================================
-            MUSIC LABEL
-        ================================================= */}
-
+        {/* MUSIC STATUS LABEL */}
         <span
           className="
             hidden
@@ -272,9 +221,8 @@ export default function MusicPlayer({
             border
             border-gold/30
             bg-maroon-deep/75
+            px-4
             py-2
-            pl-4
-            pr-4
             backdrop-blur-md
             md:flex
           "
@@ -287,37 +235,30 @@ export default function MusicPlayer({
               text-ivory/90
             "
           >
-            {data.music.labelTa}
+            {playing
+              ? "Tap to turn off music"
+              : "Tap to turn on music"}
           </span>
 
+          {/* Equalizer / muted indicator */}
           <span
-            className="
-              flex
-              h-3.5
-              items-end
-              gap-[3px]
-            "
+            className="flex h-3.5 items-end gap-[3px]"
             aria-hidden="true"
           >
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className={cn(
-                  "w-[3px] rounded-full bg-gold-light",
-                  playing
-                    ? "eq-bar"
-                    : "h-[3px]"
-                )}
-                style={
-                  playing
-                    ? {
-                        height: "100%",
-                        animationDelay: `${i * 0.18}s`,
-                      }
-                    : undefined
-                }
-              />
-            ))}
+            {playing ? (
+              [0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="eq-bar w-[3px] rounded-full bg-gold-light"
+                  style={{
+                    height: "100%",
+                    animationDelay: `${i * 0.18}s`,
+                  }}
+                />
+              ))
+            ) : (
+              <span className="text-xs">🔇</span>
+            )}
           </span>
         </span>
       </div>
