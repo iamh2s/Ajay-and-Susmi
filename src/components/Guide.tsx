@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -24,28 +25,30 @@ const STEPS = [
   },
   {
     icon: Compass,
-    target: '[data-guide="nav"], nav[aria-label="Wedding sections"]',
-    title: "Navigation Bar",
+    target: 'button[aria-label="Open navigation"]',
+    title: "Navigation Menu",
     tamil: "வழிசெலுத்தும் பட்டி",
-    text: "Use these golden icons to jump between the sections of our invitation.",
+    text: "Tap the menu button in the top-left corner to explore the wedding sections.",
     textTamil:
-      "இந்தத் தங்க நிற ஐகான்களைத் தொட்டு திருமண அழைப்பிதழின் பகுதிகளுக்குச் செல்லலாம்.",
+      "திருமண அழைப்பிதழின் பல்வேறு பகுதிகளைக் காண மேல் இடது மூலையில் உள்ள மெனு பொத்தானைத் தொடவும்.",
   },
   {
     icon: Phone,
     target: '[data-guide="contact"], button[aria-label="தொடர்பு"]',
     title: "Contact Button",
     tamil: "தொடர்பு பொத்தான்",
-    text: "Tap here to view the contact options and get in touch with us.",
-    textTamil: "இங்கே தொட்டு தொடர்பு விவரங்களைக் காணலாம்.",
+    text: "Tap the contact button to view the contact options and get in touch with us.",
+    textTamil:
+      "தொடர்பு விவரங்களைக் காண தொடர்பு பொத்தானைத் தொடவும்.",
   },
   {
     icon: Music,
     target: '[data-guide="music"], audio + div',
     title: "Music Button",
     tamil: "இசை பொத்தான்",
-    text: "Tap here to play or pause the wedding background music.",
-    textTamil: "இங்கே தொட்டு பின்னணி இசையை இயக்கலாம் அல்லது நிறுத்தலாம்.",
+    text: "Tap the music button to turn the wedding background music on or off.",
+    textTamil:
+      "திருமணப் பின்னணி இசையை இயக்க அல்லது நிறுத்த இசை பொத்தானைத் தொடவும்.",
   },
   {
     icon: ArrowDown,
@@ -58,7 +61,12 @@ const STEPS = [
   },
 ];
 
-type Rect = { top: number; left: number; width: number; height: number };
+type Rect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
 
 export default function Guide() {
   const [open, setOpen] = useState(false);
@@ -68,13 +76,13 @@ export default function Guide() {
 
   const isLast = step === STEPS.length - 1;
 
-  // Show the guide 1 second after it mounts
+  // Open guide one second after mounting
   useEffect(() => {
-    const timer = setTimeout(() => setOpen(true), 1000);
-    return () => clearTimeout(timer);
+    const timer = window.setTimeout(() => setOpen(true), 1000);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  // Measure the highlighted element (re-measures so it fits every screen)
+  // Find and highlight the target element
   useEffect(() => {
     if (!open) return;
 
@@ -83,15 +91,17 @@ export default function Guide() {
     const measure = () => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
-      const el = selector ? document.querySelector(selector) : null;
+      const el = selector
+        ? document.querySelector(selector)
+        : null;
 
       if (!el) {
-        setRect((prev) => (prev === null ? prev : null));
+        setRect(null);
         return;
       }
 
       const r = el.getBoundingClientRect();
+
       const visible =
         r.width > 0 &&
         r.height > 0 &&
@@ -101,18 +111,17 @@ export default function Guide() {
         r.left < vw;
 
       if (!visible) {
-        setRect((prev) => (prev === null ? prev : null));
+        setRect(null);
         return;
       }
 
-      // Add padding, then keep the highlight fully inside the screen
       const pad = 8;
       const left = Math.max(4, r.left - pad);
       const top = Math.max(4, r.top - pad);
       const right = Math.min(vw - 4, r.right + pad);
       const bottom = Math.min(vh - 4, r.bottom + pad);
 
-      const next = {
+      const next: Rect = {
         top: Math.round(top),
         left: Math.round(left),
         width: Math.round(right - left),
@@ -131,6 +140,7 @@ export default function Guide() {
     };
 
     measure();
+
     const interval = window.setInterval(measure, 250);
     window.addEventListener("resize", measure);
     window.addEventListener("orientationchange", measure);
@@ -142,37 +152,47 @@ export default function Guide() {
     };
   }, [open, step]);
 
-  // Escape closes, arrow keys move between steps
+  // Keyboard navigation
   useEffect(() => {
     if (!open) return;
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (step === STEPS.length - 1) setHintAfterClose(true);
+        if (step === STEPS.length - 1) {
+          setHintAfterClose(true);
+        }
         setOpen(false);
       }
+
       if (e.key === "ArrowRight") {
         setStep((s) => Math.min(s + 1, STEPS.length - 1));
       }
+
       if (e.key === "ArrowLeft") {
         setStep((s) => Math.max(s - 1, 0));
       }
     };
 
     window.addEventListener("keydown", onKey);
+
     return () => window.removeEventListener("keydown", onKey);
   }, [open, step]);
 
-  // After the guide closes: hide the scroll hint once the visitor scrolls
-  // (or automatically after 8 seconds)
+  // Hide scroll hint after scrolling or after eight seconds
   useEffect(() => {
     if (!hintAfterClose) return;
 
     const hide = () => {
-      if (window.scrollY > 40) setHintAfterClose(false);
+      if (window.scrollY > 40) {
+        setHintAfterClose(false);
+      }
     };
 
-    const timer = window.setTimeout(() => setHintAfterClose(false), 8000);
+    const timer = window.setTimeout(
+      () => setHintAfterClose(false),
+      8000
+    );
+
     window.addEventListener("scroll", hide, { passive: true });
 
     return () => {
@@ -186,12 +206,35 @@ export default function Guide() {
     setOpen(false);
   };
 
-  const next = () => (isLast ? close() : setStep((s) => s + 1));
-  const back = () => setStep((s) => Math.max(s - 1, 0));
+  const next = () =>
+    isLast ? close() : setStep((s) => s + 1);
 
-  const { icon: Icon, title, tamil, text, textTamil } = STEPS[step];
+  const back = () =>
+    setStep((s) => Math.max(s - 1, 0));
+
+  const {
+    icon: Icon,
+    title,
+    tamil,
+    text,
+    textTamil,
+  } = STEPS[step];
 
   const showScrollHint = (open && isLast) || hintAfterClose;
+
+  // Point the arrow toward the highlighted target
+  const arrowPointsLeft = rect
+    ? rect.left < window.innerWidth / 2
+    : false;
+
+  const arrowLeft = rect
+    ? arrowPointsLeft
+      ? Math.min(
+          rect.left + rect.width + 5,
+          window.innerWidth - 40
+        )
+      : Math.max(rect.left - 40, 4)
+    : 0;
 
   return (
     <>
@@ -204,7 +247,7 @@ export default function Guide() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {/* Dark backdrop: full screen, or a cut-out around the target */}
+            {/* Dark backdrop with highlighted cut-out */}
             {rect ? (
               <div
                 aria-hidden="true"
@@ -214,7 +257,8 @@ export default function Guide() {
                   left: rect.left,
                   width: rect.width,
                   height: rect.height,
-                  boxShadow: "0 0 0 9999px rgba(29,5,13,0.78)",
+                  boxShadow:
+                    "0 0 0 9999px rgba(29,5,13,0.78)",
                 }}
               />
             ) : (
@@ -224,10 +268,7 @@ export default function Guide() {
               />
             )}
 
-            {/* CENTERED CARD
-                Phones: 72px free space on each side, so the card sits between
-                the contact tab (left) and the nav bar (right).
-                Tablet / laptop / desktop: normal side spacing. */}
+            {/* Instruction card */}
             <div
               className="
                 pointer-events-none absolute inset-0
@@ -237,8 +278,8 @@ export default function Guide() {
                 sm:pr-[max(24px,env(safe-area-inset-right))]
               "
               style={{
-                paddingTop: "max(16px, env(safe-area-inset-top))",
-                // extra room at the bottom on the last step for the scroll hint
+                paddingTop:
+                  "max(16px, env(safe-area-inset-top))",
                 paddingBottom: isLast
                   ? "max(112px, env(safe-area-inset-bottom))"
                   : "max(16px, env(safe-area-inset-bottom))",
@@ -267,32 +308,43 @@ export default function Guide() {
                   <p className="pt-2 text-[9px] uppercase leading-4 tracking-[0.18em] text-[#e3c98e] sm:text-[11px] sm:tracking-[0.2em]">
                     Ajay &amp; Susmi
                     <br className="sm:hidden" />
-                    <span className="sm:before:content-['_·_']">வழிகாட்டி</span>
+                    <span className="sm:before:content-['_·_']">
+                      வழிகாட்டி
+                    </span>
                   </p>
 
                   <button
                     type="button"
                     onClick={close}
                     aria-label="Close guide"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d9bb79]/30 text-[#f7e9ce]/80 hover:bg-white/10"
+                    className="
+                      flex h-9 w-9 shrink-0 items-center justify-center
+                      rounded-full border border-[#d9bb79]/30
+                      text-[#f7e9ce]/80 hover:bg-white/10
+                    "
                   >
                     <X size={18} />
                   </button>
                 </div>
 
                 {/* Progress */}
-                <div className="mb-4 flex gap-1.5" aria-hidden="true">
+                <div
+                  className="mb-4 flex gap-1.5"
+                  aria-hidden="true"
+                >
                   {STEPS.map((_, i) => (
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                        i <= step ? "bg-[#e8cb86]" : "bg-[#e8cb86]/20"
+                        i <= step
+                          ? "bg-[#e8cb86]"
+                          : "bg-[#e8cb86]/20"
                       }`}
                     />
                   ))}
                 </div>
 
-                {/* Step content */}
+                {/* Animated step content */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={step}
@@ -313,6 +365,7 @@ export default function Guide() {
                         >
                           {title}
                         </h2>
+
                         <p
                           lang="ta"
                           className="mt-1 text-[13px] font-medium leading-5 text-[#e8cb86] sm:text-sm"
@@ -337,7 +390,7 @@ export default function Guide() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Footer (pinned to the bottom of the card) */}
+                {/* Footer */}
                 <div className="mt-auto flex items-center justify-between gap-2 pt-5">
                   <button
                     type="button"
@@ -353,7 +406,11 @@ export default function Guide() {
                         type="button"
                         onClick={back}
                         aria-label="Previous step"
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#d9bb79]/45 text-[#f4dfae] hover:bg-white/10"
+                        className="
+                          flex h-10 w-10 shrink-0 items-center justify-center
+                          rounded-full border border-[#d9bb79]/45
+                          text-[#f4dfae] hover:bg-white/10
+                        "
                       >
                         <ArrowLeft size={17} />
                       </button>
@@ -362,7 +419,13 @@ export default function Guide() {
                     <button
                       type="button"
                       onClick={next}
-                      className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#f3dfaa] bg-gradient-to-r from-[#f0d89e] to-[#c49b52] px-4 text-xs font-semibold text-[#45101c] active:scale-95 sm:px-5 sm:text-sm"
+                      className="
+                        inline-flex min-h-10 items-center gap-1.5
+                        rounded-full border border-[#f3dfaa]
+                        bg-gradient-to-r from-[#f0d89e] to-[#c49b52]
+                        px-4 text-xs font-semibold text-[#45101c]
+                        active:scale-95 sm:px-5 sm:text-sm
+                      "
                     >
                       {isLast ? (
                         <>
@@ -379,33 +442,71 @@ export default function Guide() {
               </motion.section>
             </div>
 
-            {/* Gold pulsing ring around the highlighted button */}
+            {/* Gold highlight and animated directional arrow */}
             {rect && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none fixed rounded-3xl transition-all duration-300"
-                style={{
-                  top: rect.top,
-                  left: rect.left,
-                  width: rect.width,
-                  height: rect.height,
-                  boxShadow: "0 0 30px rgba(233,204,133,0.5)",
-                }}
-              >
-                <div className="absolute inset-0 animate-pulse rounded-3xl border-2 border-[#e9cc85]" />
-              </div>
+              <>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none fixed rounded-3xl transition-all duration-300"
+                  style={{
+                    top: rect.top,
+                    left: rect.left,
+                    width: rect.width,
+                    height: rect.height,
+                    boxShadow:
+                      "0 0 30px rgba(233,204,133,0.5)",
+                  }}
+                >
+                  <div className="absolute inset-0 animate-pulse rounded-3xl border-2 border-[#e9cc85]" />
+                </div>
+
+                <motion.div
+                  aria-hidden="true"
+                  className="
+                    pointer-events-none fixed z-[10002]
+                    flex h-9 w-9 items-center justify-center
+                    rounded-full border border-[#e9cc85]/70
+                    bg-[#2d0913]/95 text-[#f0d99e]
+                    shadow-[0_0_18px_rgba(233,204,133,0.35)]
+                  "
+                  style={{
+                    top: Math.max(
+                      4,
+                      Math.min(
+                        rect.top + rect.height / 2 - 18,
+                        window.innerHeight - 40
+                      )
+                    ),
+                    left: arrowLeft,
+                  }}
+                  animate={{ x: [0, arrowPointsLeft ? -5 : 5, 0] }}
+                  transition={{
+                    duration: 0.9,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  {arrowPointsLeft ? (
+                    <ArrowLeft size={22} strokeWidth={2.5} />
+                  ) : (
+                    <ArrowRight size={22} strokeWidth={2.5} />
+                  )}
+                </motion.div>
+              </>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* SCROLL DOWN HINT: last step + after the guide closes */}
+      {/* Scroll hint */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
             aria-hidden="true"
             className="pointer-events-none fixed inset-x-0 z-[10001] flex justify-center px-3"
-            style={{ bottom: "max(20px, env(safe-area-inset-bottom))" }}
+            style={{
+              bottom: "max(20px, env(safe-area-inset-bottom))",
+            }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
@@ -424,7 +525,11 @@ export default function Guide() {
               </p>
 
               <motion.span
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e9cc85] bg-[#e9cc85]/15 text-[#f0d99e]"
+                className="
+                  flex h-8 w-8 items-center justify-center
+                  rounded-full border border-[#e9cc85]
+                  bg-[#e9cc85]/15 text-[#f0d99e]
+                "
                 animate={{ y: [0, 7, 0] }}
                 transition={{
                   duration: 1.2,
