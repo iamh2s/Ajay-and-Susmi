@@ -21,7 +21,7 @@ const STEPS = [
     tamil: "எங்கள் திருமணத்திற்கு வரவேற்கிறோம்",
     text: "Welcome to Ajay & Susmi's wedding invitation. Let us show you how to explore our special day.",
     textTamil:
-      "அஜய் மற்றும் சுஸ்மியின் திருமண அழைப்பிதழுக்கு அன்புடன் வரவேற்கிறோம்.",
+      "அஜய் மற்றும் சுஷ்மியின் திருமண அழைப்பிதழுக்கு அன்புடன் வரவேற்கிறோம்.",
   },
   {
     icon: Compass,
