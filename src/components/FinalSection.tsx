@@ -400,37 +400,7 @@ export default function FinalSection() {
             <span>Crafted With Love &amp; Blessings</span>
           </p>
 
-          {/* Website By */}
-          <p
-            className="
-              mt-4
-              font-latin
-              text-[0.55rem]
-              uppercase
-              tracking-[0.20em]
-              text-ivory/40
-              sm:text-[0.63rem]
-              sm:tracking-[0.22em]
-            "
-          >
-            Website by{" "}
-            <a
-              href={credit.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                text-gold-light/75
-                underline
-                decoration-gold/40
-                underline-offset-4
-                transition-colors
-                duration-300
-                hover:text-gold-light
-              "
-            >
-              {credit.name}
-            </a>
-          </p>
+     
         </div>
       </div>
     </footer>
