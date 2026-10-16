@@ -1,3 +1,4 @@
+
 import {
   BookOpen,
   Heart,
@@ -32,7 +33,6 @@ const icons: Record<string, LucideIcon> = {
 export default function SideNavigation() {
   const [activeId, setActiveId] = useState<string>("home");
 
-  // Navigation is always visible while this component is mounted.
   const visible = true;
 
   /* =======================================================
@@ -42,7 +42,9 @@ export default function SideNavigation() {
   useEffect(() => {
     const sections = data.nav
       .map((item) => document.getElementById(item.id))
-      .filter((element): element is HTMLElement => Boolean(element));
+      .filter(
+        (element): element is HTMLElement => Boolean(element)
+      );
 
     if (!sections.length) return;
 
@@ -60,13 +62,9 @@ export default function SideNavigation() {
       }
     );
 
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
+    sections.forEach((section) => observer.observe(section));
 
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, []);
 
   /* =======================================================
@@ -77,21 +75,21 @@ export default function SideNavigation() {
     <nav
       aria-label="Wedding sections"
       className={cn(
-        "fixed right-3 top-1/2 z-50 -translate-y-1/2",
-        "transition-all duration-700",
-        "sm:right-5",
+        "fixed left-3 top-4 z-[9997]",
+        "transition-all duration-500",
+        "sm:left-5 sm:top-6",
         visible
           ? "translate-x-0 opacity-100"
-          : "pointer-events-none translate-x-4 opacity-0"
+          : "pointer-events-none -translate-x-4 opacity-0"
       )}
     >
       <ul
         className="
-          flex flex-col items-center gap-2.5
+          flex flex-col items-center gap-2
           rounded-full
           border border-gold/30
-          bg-maroon-deep/72
-          px-1.5 py-3
+          bg-maroon-deep/85
+          px-1.5 py-2.5
           shadow-[0_12px_40px_-12px_rgba(0,0,0,0.7)]
           backdrop-blur-md
         "
@@ -102,12 +100,10 @@ export default function SideNavigation() {
 
           return (
             <li key={item.id} className="group relative">
-              {/* NAV BUTTON */}
-
               <button
                 type="button"
                 aria-label={`${item.ta} — ${item.en}`}
-                aria-current={active ? "true" : undefined}
+                aria-current={active ? "location" : undefined}
                 onClick={() => {
                   document
                     .getElementById(item.id)
@@ -125,7 +121,7 @@ export default function SideNavigation() {
                     rounded-full
                     border
                     transition-all
-                    duration-500
+                    duration-300
                     sm:h-10
                     sm:w-10
                   `,
@@ -156,22 +152,21 @@ export default function SideNavigation() {
               </button>
 
               {/* TOOLTIP */}
-
               <span
                 aria-hidden="true"
                 className="
                   pointer-events-none
                   absolute
-                  right-full
+                  left-full
                   top-1/2
-                  mr-3
+                  ml-3
                   hidden
                   -translate-y-1/2
                   whitespace-nowrap
                   rounded-full
                   border
                   border-gold/40
-                  bg-maroon-deep/90
+                  bg-maroon-deep/95
                   px-3
                   py-1.5
                   opacity-0
@@ -179,7 +174,7 @@ export default function SideNavigation() {
                   backdrop-blur-sm
                   transition-all
                   duration-300
-                  group-hover:-translate-x-1
+                  group-hover:translate-x-1
                   group-hover:opacity-100
                   group-focus-within:opacity-100
                   md:block
