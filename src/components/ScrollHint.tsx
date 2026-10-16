@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -21,7 +20,7 @@ export default function ScrollHint() {
     }
   }, []);
 
-  // Hide while scrolling; show a tiny hint after 7 seconds
+  // Hide while scrolling; show again after 7 seconds
   useEffect(() => {
     const handleScroll = () => {
       if (footerRef.current) return;
@@ -46,7 +45,7 @@ export default function ScrollHint() {
     };
   }, [clearTimer]);
 
-  // Detect when the footer enters the viewport
+  // Detect footer visibility
   useEffect(() => {
     const footer = document.getElementById("footer");
     if (!footer) return;
@@ -85,20 +84,28 @@ export default function ScrollHint() {
     };
   }, [clearTimer]);
 
-  // Return to the top
-  const goToTop = () => {
+  // Scroll down or return to top
+  const handleClick = () => {
     clearTimer();
-    footerRef.current = false;
-    setFooterVisible(false);
     setVisible(false);
 
-    window.scrollTo({
-      top: 0,
-      behavior: reduceMotion ? "auto" : "smooth",
-    });
+    if (footerVisible) {
+      window.scrollTo({
+        top: 0,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    } else {
+      // Scroll down by approximately one screen
+      window.scrollBy({
+        top: Math.round(window.innerHeight * 0.8),
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    }
 
     timerRef.current = setTimeout(() => {
-      setVisible(true);
+      if (!document.hidden) {
+        setVisible(true);
+      }
     }, reduceMotion ? 100 : 1200);
   };
 
@@ -124,9 +131,8 @@ export default function ScrollHint() {
     >
       <motion.button
         type="button"
-        onClick={footerVisible ? goToTop : undefined}
-        disabled={!footerVisible}
-        tabIndex={visible && footerVisible ? 0 : -1}
+        onClick={handleClick}
+        tabIndex={visible ? 0 : -1}
         aria-label={footerVisible ? "Go to top" : "Scroll down"}
         animate={
           visible && !reduceMotion
@@ -147,8 +153,8 @@ export default function ScrollHint() {
         className="
           pointer-events-auto
           flex
-          h-6
-          w-6
+          h-7
+          w-7
           touch-manipulation
           items-center
           justify-center
@@ -161,15 +167,9 @@ export default function ScrollHint() {
         "
       >
         {footerVisible ? (
-          <ChevronUp
-            size={17}
-            strokeWidth={1.6}
-          />
+          <ChevronUp size={17} strokeWidth={1.6} />
         ) : (
-          <ChevronDown
-            size={17}
-            strokeWidth={1.6}
-          />
+          <ChevronDown size={17} strokeWidth={1.6} />
         )}
       </motion.button>
     </motion.div>
