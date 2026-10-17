@@ -141,7 +141,7 @@ export default function HeroSection({
           "
           style={{
             objectPosition: "center 0%",
-            filter: "blur(1px)",
+           
             transform: "scale(1.02)",
             marginTop: "1px",
           }}
