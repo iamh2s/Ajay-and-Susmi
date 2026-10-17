@@ -1,7 +1,5 @@
 
-"use client";
-
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDown,
@@ -40,7 +38,8 @@ const STEPS = [
     title: "Contact Button",
     tamil: "தொடர்பு பொத்தான்",
     text: "Tap the contact button to view the contact options and get in touch with us.",
-    textTamil: "தொடர்பு விவரங்களைக் காண தொடர்பு பொத்தானைத் தொடவும்.",
+    textTamil:
+      "தொடர்பு விவரங்களைக் காண தொடர்பு பொத்தானைத் தொடவும்.",
   },
   {
     icon: Music,
@@ -60,7 +59,7 @@ const STEPS = [
     textTamil:
       "எங்கள் கதை, குடும்பம், திருமண விவரங்கள் மற்றும் புகைப்படங்களைக் காண மெதுவாக ஸ்க்ரோல் செய்யுங்கள்.",
   },
-] as const;
+];
 
 type Rect = {
   top: number;
@@ -77,164 +76,128 @@ export default function Guide() {
 
   const isLast = step === STEPS.length - 1;
 
-  // Open the guide one second after mounting.
+  // Open guide one second after mounting
   useEffect(() => {
     const timer = window.setTimeout(() => setOpen(true), 1000);
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Measure the highlighted element only when the layout may have changed.
-  const measureTarget = useCallback(() => {
-    const selector = STEPS[step].target;
-
-    if (!selector) {
-      setRect(null);
-      return;
-    }
-
-    const element = document.querySelector(selector);
-
-    if (!(element instanceof HTMLElement)) {
-      setRect(null);
-      return;
-    }
-
-    const bounds = element.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    const visible =
-      bounds.width > 0 &&
-      bounds.height > 0 &&
-      bounds.bottom > 0 &&
-      bounds.top < viewportHeight &&
-      bounds.right > 0 &&
-      bounds.left < viewportWidth;
-
-    if (!visible) {
-      setRect(null);
-      return;
-    }
-
-    const padding = 8;
-    const left = Math.max(4, bounds.left - padding);
-    const top = Math.max(4, bounds.top - padding);
-    const right = Math.min(viewportWidth - 4, bounds.right + padding);
-    const bottom = Math.min(viewportHeight - 4, bounds.bottom + padding);
-
-    const nextRect: Rect = {
-      top: Math.round(top),
-      left: Math.round(left),
-      width: Math.round(right - left),
-      height: Math.round(bottom - top),
-    };
-
-    setRect((previous) => {
-      if (
-        previous &&
-        previous.top === nextRect.top &&
-        previous.left === nextRect.left &&
-        previous.width === nextRect.width &&
-        previous.height === nextRect.height
-      ) {
-        return previous;
-      }
-
-      return nextRect;
-    });
-  }, [step]);
-
-  useEffect(() => {
-    if (!open) {
-      setRect(null);
-      return;
-    }
-
-    let frame = 0;
-
-    const scheduleMeasure = () => {
-      if (frame) return;
-
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        measureTarget();
-      });
-    };
-
-    measureTarget();
-
-    window.addEventListener("resize", scheduleMeasure, { passive: true });
-    window.addEventListener("scroll", scheduleMeasure, {
-      passive: true,
-      capture: true,
-    });
-    window.addEventListener("orientationchange", scheduleMeasure);
-
-    // ResizeObserver catches size changes without continuous polling.
-    const observer =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(scheduleMeasure)
-        : null;
-
-    if (observer) {
-      observer.observe(document.documentElement);
-
-      const selector = STEPS[step].target;
-      const target = selector ? document.querySelector(selector) : null;
-
-      if (target) observer.observe(target);
-    }
-
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-
-      observer?.disconnect();
-
-      window.removeEventListener("resize", scheduleMeasure);
-      window.removeEventListener("scroll", scheduleMeasure, true);
-      window.removeEventListener("orientationchange", scheduleMeasure);
-    };
-  }, [open, step, measureTarget]);
-
-  // Keyboard controls.
+  // Find and highlight the target element
   useEffect(() => {
     if (!open) return;
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (isLast) setHintAfterClose(true);
+    const selector = STEPS[step].target;
+
+    const measure = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const el = selector
+        ? document.querySelector(selector)
+        : null;
+
+      if (!el) {
+        setRect(null);
+        return;
+      }
+
+      const r = el.getBoundingClientRect();
+
+      const visible =
+        r.width > 0 &&
+        r.height > 0 &&
+        r.bottom > 0 &&
+        r.top < vh &&
+        r.right > 0 &&
+        r.left < vw;
+
+      if (!visible) {
+        setRect(null);
+        return;
+      }
+
+      const pad = 8;
+      const left = Math.max(4, r.left - pad);
+      const top = Math.max(4, r.top - pad);
+      const right = Math.min(vw - 4, r.right + pad);
+      const bottom = Math.min(vh - 4, r.bottom + pad);
+
+      const next: Rect = {
+        top: Math.round(top),
+        left: Math.round(left),
+        width: Math.round(right - left),
+        height: Math.round(bottom - top),
+      };
+
+      setRect((prev) =>
+        prev &&
+        prev.top === next.top &&
+        prev.left === next.left &&
+        prev.width === next.width &&
+        prev.height === next.height
+          ? prev
+          : next
+      );
+    };
+
+    measure();
+
+    const interval = window.setInterval(measure, 250);
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("orientationchange", measure);
+    };
+  }, [open, step]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!open) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (step === STEPS.length - 1) {
+          setHintAfterClose(true);
+        }
         setOpen(false);
       }
 
-      if (event.key === "ArrowRight") {
-        setStep((current) => Math.min(current + 1, STEPS.length - 1));
+      if (e.key === "ArrowRight") {
+        setStep((s) => Math.min(s + 1, STEPS.length - 1));
       }
 
-      if (event.key === "ArrowLeft") {
-        setStep((current) => Math.max(current - 1, 0));
+      if (e.key === "ArrowLeft") {
+        setStep((s) => Math.max(s - 1, 0));
       }
     };
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKey);
 
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, isLast]);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, step]);
 
-  // Dismiss the scroll hint when the visitor starts scrolling.
+  // Hide scroll hint after scrolling or after eight seconds
   useEffect(() => {
     if (!hintAfterClose) return;
 
-    const hideHint = () => {
-      if (window.scrollY > 40) setHintAfterClose(false);
+    const hide = () => {
+      if (window.scrollY > 40) {
+        setHintAfterClose(false);
+      }
     };
 
-    const timer = window.setTimeout(() => setHintAfterClose(false), 8000);
+    const timer = window.setTimeout(
+      () => setHintAfterClose(false),
+      8000
+    );
 
-    window.addEventListener("scroll", hideHint, { passive: true });
+    window.addEventListener("scroll", hide, { passive: true });
 
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("scroll", hideHint);
+      window.removeEventListener("scroll", hide);
     };
   }, [hintAfterClose]);
 
@@ -243,29 +206,33 @@ export default function Guide() {
     setOpen(false);
   };
 
-  const next = () => {
-    if (isLast) {
-      close();
-    } else {
-      setStep((current) => Math.min(current + 1, STEPS.length - 1));
-    }
-  };
+  const next = () =>
+    isLast ? close() : setStep((s) => s + 1);
 
-  const back = () => {
-    setStep((current) => Math.max(current - 1, 0));
-  };
+  const back = () =>
+    setStep((s) => Math.max(s - 1, 0));
 
-  const currentStep = STEPS[step];
-  const Icon = currentStep.icon;
+  const {
+    icon: Icon,
+    title,
+    tamil,
+    text,
+    textTamil,
+  } = STEPS[step];
+
   const showScrollHint = (open && isLast) || hintAfterClose;
 
+  // Point the arrow toward the highlighted target
   const arrowPointsLeft = rect
     ? rect.left < window.innerWidth / 2
     : false;
 
   const arrowLeft = rect
     ? arrowPointsLeft
-      ? Math.min(rect.left + rect.width + 5, window.innerWidth - 40)
+      ? Math.min(
+          rect.left + rect.width + 5,
+          window.innerWidth - 40
+        )
       : Math.max(rect.left - 40, 4)
     : 0;
 
@@ -278,26 +245,25 @@ export default function Guide() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25 }}
           >
-            {/* Backdrop and target cut-out */}
+            {/* Dark backdrop with highlighted cut-out */}
             {rect ? (
               <div
                 aria-hidden="true"
-                className="pointer-events-none fixed rounded-3xl"
+                className="pointer-events-none fixed rounded-3xl transition-all duration-300"
                 style={{
                   top: rect.top,
                   left: rect.left,
                   width: rect.width,
                   height: rect.height,
-                  boxShadow: "0 0 0 9999px rgba(29,5,13,0.78)",
+                  boxShadow:
+                    "0 0 0 9999px rgba(29,5,13,0.78)",
                 }}
               />
             ) : (
-              <button
-                type="button"
-                aria-label="Close guide backdrop"
-                className="absolute inset-0 h-full w-full bg-[#1d050d]/80"
+              <div
+                className="absolute inset-0 bg-[#1d050d]/78"
                 onClick={close}
               />
             )}
@@ -307,10 +273,13 @@ export default function Guide() {
               className="
                 pointer-events-none absolute inset-0
                 flex items-center justify-center
-                px-3 sm:px-6
+                pl-[72px] pr-[72px]
+                sm:pl-[max(24px,env(safe-area-inset-left))]
+                sm:pr-[max(24px,env(safe-area-inset-right))]
               "
               style={{
-                paddingTop: "max(16px, env(safe-area-inset-top))",
+                paddingTop:
+                  "max(16px, env(safe-area-inset-top))",
                 paddingBottom: isLast
                   ? "max(112px, env(safe-area-inset-bottom))"
                   : "max(16px, env(safe-area-inset-bottom))",
@@ -320,22 +289,23 @@ export default function Guide() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="guide-title"
-                initial={{ opacity: 0, scale: 0.97, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="
-                  pointer-events-auto flex max-h-full min-h-[26rem]
-                  w-full max-w-md flex-col overflow-y-auto
-                  overscroll-contain rounded-3xl
-                  border border-[#c7a45e]/60
+                  pointer-events-auto flex max-h-full w-full flex-col
+                  overflow-y-auto overscroll-contain
+                  rounded-3xl border border-[#c7a45e]/60
                   bg-gradient-to-br from-[#641d2b] via-[#4c101e] to-[#2d0913]
-                  px-4 py-5 text-[#fff8e9] shadow-2xl
-                  sm:min-h-0 sm:p-6 lg:max-w-lg
+                  px-3.5 py-5 text-[#fff8e9] shadow-2xl
+                  min-h-[26rem]
+                  sm:min-h-0 sm:max-w-md sm:p-6
+                  lg:max-w-lg
                 "
               >
                 {/* Header */}
                 <div className="mb-3 flex items-start justify-between gap-2">
-                  <p className="pt-2 text-[10px] uppercase leading-5 tracking-[0.16em] text-[#e3c98e] sm:text-[11px] sm:tracking-[0.2em]">
+                  <p className="pt-2 text-[9px] uppercase leading-4 tracking-[0.18em] text-[#e3c98e] sm:text-[11px] sm:tracking-[0.2em]">
                     Ajay &amp; Susmi
                     <br className="sm:hidden" />
                     <span className="sm:before:content-['_·_']">
@@ -350,21 +320,23 @@ export default function Guide() {
                     className="
                       flex h-9 w-9 shrink-0 items-center justify-center
                       rounded-full border border-[#d9bb79]/30
-                      text-[#f7e9ce]/80 transition-colors
-                      hover:bg-white/10
+                      text-[#f7e9ce]/80 hover:bg-white/10
                     "
                   >
                     <X size={18} />
                   </button>
                 </div>
 
-                {/* Progress indicators */}
-                <div className="mb-4 flex gap-1.5" aria-hidden="true">
-                  {STEPS.map((_, index) => (
+                {/* Progress */}
+                <div
+                  className="mb-4 flex gap-1.5"
+                  aria-hidden="true"
+                >
+                  {STEPS.map((_, i) => (
                     <div
-                      key={index}
-                      className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
-                        index <= step
+                      key={i}
+                      className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                        i <= step
                           ? "bg-[#e8cb86]"
                           : "bg-[#e8cb86]/20"
                       }`}
@@ -372,14 +344,14 @@ export default function Guide() {
                   ))}
                 </div>
 
-                {/* Step content */}
+                {/* Animated step content */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={step}
-                    initial={{ opacity: 0, x: 10 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.16 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d9bb79]/45 bg-[#d9bb79]/10 text-[#f0d99e] sm:h-12 sm:w-12">
@@ -391,14 +363,14 @@ export default function Guide() {
                           id="guide-title"
                           className="font-serif text-base font-semibold leading-tight text-[#fff4dd] sm:text-xl"
                         >
-                          {currentStep.title}
+                          {title}
                         </h2>
 
                         <p
                           lang="ta"
                           className="mt-1 text-[13px] font-medium leading-5 text-[#e8cb86] sm:text-sm"
                         >
-                          {currentStep.tamil}
+                          {tamil}
                         </p>
                       </div>
                     </div>
@@ -406,24 +378,24 @@ export default function Guide() {
                     <div className="my-4 h-px bg-gradient-to-r from-transparent via-[#d9bb79]/50 to-transparent" />
 
                     <p className="text-[13px] leading-6 text-[#fff6e8]/90 sm:text-sm">
-                      {currentStep.text}
+                      {text}
                     </p>
 
                     <p
                       lang="ta"
                       className="mt-3 text-[13px] leading-7 text-[#f0dcb7]/90 sm:text-sm"
                     >
-                      {currentStep.textTamil}
+                      {textTamil}
                     </p>
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Footer controls */}
+                {/* Footer */}
                 <div className="mt-auto flex items-center justify-between gap-2 pt-5">
                   <button
                     type="button"
                     onClick={close}
-                    className="py-2 pr-1 text-xs text-[#f7e9ce]/75 transition-colors hover:text-white"
+                    className="py-2 pr-1 text-xs text-[#f7e9ce]/75 hover:text-white"
                   >
                     Skip
                   </button>
@@ -437,7 +409,7 @@ export default function Guide() {
                         className="
                           flex h-10 w-10 shrink-0 items-center justify-center
                           rounded-full border border-[#d9bb79]/45
-                          text-[#f4dfae] transition-colors hover:bg-white/10
+                          text-[#f4dfae] hover:bg-white/10
                         "
                       >
                         <ArrowLeft size={17} />
@@ -452,8 +424,7 @@ export default function Guide() {
                         rounded-full border border-[#f3dfaa]
                         bg-gradient-to-r from-[#f0d89e] to-[#c49b52]
                         px-4 text-xs font-semibold text-[#45101c]
-                        transition-transform active:scale-95
-                        sm:px-5 sm:text-sm
+                        active:scale-95 sm:px-5 sm:text-sm
                       "
                     >
                       {isLast ? (
@@ -471,18 +442,19 @@ export default function Guide() {
               </motion.section>
             </div>
 
-            {/* Target highlight and directional arrow */}
+            {/* Gold highlight and animated directional arrow */}
             {rect && (
               <>
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none fixed rounded-3xl"
+                  className="pointer-events-none fixed rounded-3xl transition-all duration-300"
                   style={{
                     top: rect.top,
                     left: rect.left,
                     width: rect.width,
                     height: rect.height,
-                    boxShadow: "0 0 22px rgba(233,204,133,0.4)",
+                    boxShadow:
+                      "0 0 30px rgba(233,204,133,0.5)",
                   }}
                 >
                   <div className="absolute inset-0 animate-pulse rounded-3xl border-2 border-[#e9cc85]" />
@@ -495,7 +467,7 @@ export default function Guide() {
                     flex h-9 w-9 items-center justify-center
                     rounded-full border border-[#e9cc85]/70
                     bg-[#2d0913]/95 text-[#f0d99e]
-                    shadow-[0_0_14px_rgba(233,204,133,0.3)]
+                    shadow-[0_0_18px_rgba(233,204,133,0.35)]
                   "
                   style={{
                     top: Math.max(
@@ -507,17 +479,17 @@ export default function Guide() {
                     ),
                     left: arrowLeft,
                   }}
-                  animate={{ x: [0, arrowPointsLeft ? -4 : 4, 0] }}
+                  animate={{ x: [0, arrowPointsLeft ? -5 : 5, 0] }}
                   transition={{
-                    duration: 1,
+                    duration: 0.9,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
                 >
                   {arrowPointsLeft ? (
-                    <ArrowLeft size={21} strokeWidth={2.5} />
+                    <ArrowLeft size={22} strokeWidth={2.5} />
                   ) : (
-                    <ArrowRight size={21} strokeWidth={2.5} />
+                    <ArrowRight size={22} strokeWidth={2.5} />
                   )}
                 </motion.div>
               </>
@@ -535,13 +507,13 @@ export default function Guide() {
             style={{
               bottom: "max(20px, env(safe-area-inset-bottom))",
             }}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="flex flex-col items-center gap-1.5 rounded-full border border-[#d9bb79]/60 bg-[#2d0913]/95 px-5 py-2.5 text-center shadow-xl sm:px-6 sm:py-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#f0d99e] sm:text-xs">
+            <div className="flex flex-col items-center gap-1.5 rounded-full border border-[#d9bb79]/60 bg-[#2d0913]/85 px-5 py-2.5 text-center shadow-xl backdrop-blur-md sm:px-6 sm:py-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#f0d99e] sm:text-xs">
                 Scroll Down
               </p>
 
@@ -558,9 +530,9 @@ export default function Guide() {
                   rounded-full border border-[#e9cc85]
                   bg-[#e9cc85]/15 text-[#f0d99e]
                 "
-                animate={{ y: [0, 5, 0] }}
+                animate={{ y: [0, 7, 0] }}
                 transition={{
-                  duration: 1.3,
+                  duration: 1.2,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
