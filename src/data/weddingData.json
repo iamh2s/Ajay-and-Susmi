@@ -11,7 +11,7 @@
       "fullEnglish": "K.T. Susmitha",
       "roleTa": "மணமகள்",
       "roleEn": "The Bride",
-      "image": "/images/bride.jpg",
+      "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237997/bride.png",
       "imageAlt": "K.T. சுஷ்மிதா , the bride, in a maroon Kanjivaram silk saree with antique gold temple jewellery and jasmine garlands"
     },
     "groom": {
@@ -20,7 +20,7 @@
       "inviteTamil": "M.P. அஜெய்குமார்",
       "roleTa": "மணமகன்",
       "roleEn": "The Groom",
-      "image": "/images/groom.jpg",
+      "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237991/groom.png",
       "imageAlt": "M.P. அஜெய்குமார், the groom, in a cream silk shirt and gold-bordered veshti with angavastram"
     }
   },
@@ -32,7 +32,7 @@
     "ctaEn": "Touch to Open"
   },
   "hero": {
-    "image": "/images/home/couple.jpg",
+    "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237787/couple.png",
     "imageAlt": "Susmitha and Ajaykumar together in traditional Tamil wedding attire before a temple entrance with glowing brass lamps",
     "titleTa": "திருமண அழைப்பிதழ்",
     "titleEn": "Wedding Invitation",
@@ -51,7 +51,7 @@
     "chapters": [
       {
         "number": "01",
-        "image": "/images/story/story-01.jpg",
+        "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237866/story-01.png",
         "imageAlt": "Two South Indian families meeting at a home entrance decorated with mango leaves and glowing brass lamps",
         "titleTa": "ஒரு அழகான நட்பின் தொடக்கம்",
         "textTa": "இரு குடும்பங்களின் நட்பில் இந்த அழகான பயணம் தொடங்கியது.",
@@ -60,7 +60,7 @@
       },
       {
         "number": "02",
-        "image": "/images/story/story-02.jpg",
+        "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237868/story-02.png",
         "imageAlt": "The couple as friends on temple stone steps at golden sunset with the gopuram glowing behind",
         "titleTa": "ஒரு இயல்பான சந்திப்பு",
         "textTa": "அவர்களின் பிள்ளைகளும் முதலில் நண்பர்களாகவே பழகத் தொடங்கினர்.",
@@ -69,7 +69,7 @@
       },
       {
         "number": "03",
-        "image": "/images/story/story-03.jpg",
+        "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237870/story-03.png",
         "imageAlt": "Elders' hands blessing a garland and invitation beside brass lamps and palm-leaf horoscopes",
         "titleTa": "பெற்றோரின் அழகான முடிவு",
         "textTa": "ஒரு நாள், இந்த இரு குடும்பங்களையும் திருமணத்தின் மூலம் ஒன்றாக இணைக்க பெற்றோர் முடிவு செய்தனர்.",
@@ -78,7 +78,7 @@
       },
       {
         "number": "04",
-        "image": "/images/story/story-04.jpg",
+        "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237874/story-04.png",
         "imageAlt": "The couple walking hand in hand through a temple corridor of carved pillars in golden light",
         "titleTa": "நட்பிலிருந்து வாழ்க்கைத் துணையாக",
         "textTa": "நட்பாக தொடங்கிய உறவு, வாழ்க்கைத் துணைகளாக மாறும் அழகான பயணமாகியது.",
@@ -87,7 +87,7 @@
       },
       {
         "number": "05",
-        "image": "/images/story/story-05.jpg",
+        "image": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792237873/story-05.png",
         "imageAlt": "The couple exchanging a ring over a brass plate of flowers while family shower petals",
         "titleTa": "ஒரு புதிய வாழ்க்கையின் தொடக்கம்",
         "textTa": "இப்போது, இரு குடும்பங்களின் அன்புடனும் ஆசீர்வாதத்துடனும் ஒரு புதிய அத்தியாயம் தொடங்குகிறது.",
@@ -212,23 +212,23 @@
     "headingEn": "Photo Gallery",
     "images": [
   {
-    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614853/01.png",
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792239053/01_1.png",
     "alt": "A beautiful wedding memory"
   },
   {
-    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614859/02.png",
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792239056/02_1.png",
     "alt": "A precious moment together"
   },
   {
-    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614862/03.png",
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792239058/03_1.png",
     "alt": "A timeless memory of love"
   },
   {
-    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791614863/04.png",
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792239060/04_1.png",
     "alt": "A beautiful chapter in our story"
   },
   {
-    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1791786792/fa31fbc1-5c52-49a8-a237-b25f06684792.png",
+    "src": "https://res.cloudinary.com/kpkj3xqw/image/upload/v1792239062/fa31fbc1-5c52-49a8-a237-b25f06684792_1.png",
     "alt": "Memories to cherish forever"
   }
 ]
