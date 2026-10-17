@@ -28,7 +28,7 @@ function FilmHoles() {
       aria-hidden="true"
       className="flex w-full justify-between overflow-hidden px-3"
     >
-      {Array.from({ length: 34 }).map((_, index) => (
+      {Array.from({ length: 34 }, (_, index) => (
         <span
           key={index}
           className="h-[5px] w-[11px] shrink-0 rounded-[2px] bg-[#f4e7cf]/10 sm:h-[6px] sm:w-[14px] md:h-[7px] md:w-[16px]"
@@ -59,10 +59,10 @@ function FilmFrame({
       className={cn(
         "relative shrink-0",
         "w-[78vw] sm:w-[62vw] md:w-[47vw]",
-        "lg:w-[42vw] xl:w-[38vw] max-w-[680px]"
+        "max-w-[680px] lg:w-[42vw] xl:w-[38vw]"
       )}
     >
-      <div className="relative border border-[#d8ad55]/40 bg-[#16070b] p-2 pb-3 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)] sm:p-2.5 sm:pb-3.5 md:p-3">
+      <div className="relative border border-[#d8ad55]/40 bg-[#16070b] p-2 pb-3 shadow-[0_25px_55px_-30px_rgba(0,0,0,0.8)] sm:p-2.5 sm:pb-3.5 md:p-3">
         <div className="relative overflow-hidden">
           <div
             className={cn(
@@ -75,25 +75,26 @@ function FilmFrame({
             <img
               src={image.src}
               alt={image.alt}
-              loading={index < 2 ? "eager" : "lazy"}
+              loading="lazy"
               decoding="async"
-              fetchPriority={index < 2 ? "high" : "auto"}
+              fetchPriority="low"
               draggable={false}
-              className="block h-full w-full select-none object-cover transform-gpu"
+              className="block h-full w-full select-none object-cover"
+              sizes="(max-width: 639px) 78vw, (max-width: 767px) 62vw, (max-width: 1023px) 47vw, 680px"
             />
 
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#120307]/70 via-transparent to-[#120307]/10"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#120307]/60 via-transparent to-[#120307]/10"
             />
 
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 shadow-[inset_0_0_70px_rgba(0,0,0,0.4)]"
+              className="pointer-events-none absolute inset-0 shadow-[inset_0_0_45px_rgba(0,0,0,0.3)]"
             />
           </div>
 
-          <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-sm bg-[#17060b]/65 px-2 py-1 font-latin text-[8px] tracking-[0.28em] text-[#f0d38a]/85 backdrop-blur-sm sm:right-3 sm:top-3 sm:text-[9px]">
+          <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-sm bg-[#17060b]/65 px-2 py-1 font-latin text-[8px] tracking-[0.28em] text-[#f0d38a]/85 sm:right-3 sm:top-3 sm:text-[9px]">
             {String(index + 1).padStart(2, "0")} /{" "}
             {String(total).padStart(2, "0")}
           </span>
@@ -133,6 +134,7 @@ export default function GallerySection() {
 
   useLayoutEffect(() => {
     const element = track.current;
+
     if (!element) return;
 
     let animationFrame = 0;
@@ -142,6 +144,7 @@ export default function GallerySection() {
 
       animationFrame = requestAnimationFrame(() => {
         const currentTrack = track.current;
+
         if (!currentTrack) return;
 
         const distance = Math.max(
@@ -228,6 +231,7 @@ export default function GallerySection() {
       );
 
       const frame = frames[index];
+
       if (!frame) return;
 
       const frameCenter =
@@ -253,23 +257,29 @@ export default function GallerySection() {
 
       window.scrollTo({
         top: Math.max(0, targetScroll),
-        behavior: "smooth",
+        behavior: window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches
+          ? "auto"
+          : "smooth",
       });
     },
     [extra, getScrollDistance, images.length]
   );
 
   /* =======================================================
-     SYNCHRONIZE ACTIVE IMAGE DURING MANUAL SCROLLING
+     SYNCHRONIZE ACTIVE IMAGE DURING SCROLLING
   ======================================================= */
 
   useEffect(() => {
     let frameId = 0;
 
     const updateCurrentImage = () => {
-      cancelAnimationFrame(frameId);
+      if (frameId) return;
 
       frameId = requestAnimationFrame(() => {
+        frameId = 0;
+
         const element = track.current;
         const section = root.current;
 
@@ -338,7 +348,9 @@ export default function GallerySection() {
       passive: true,
     });
 
-    window.addEventListener("resize", updateCurrentImage);
+    window.addEventListener("resize", updateCurrentImage, {
+      passive: true,
+    });
 
     return () => {
       cancelAnimationFrame(frameId);
@@ -368,35 +380,18 @@ export default function GallerySection() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      // Desktop
-      mm.add("(min-width: 1024px)", () => {
-        gsap.set(element, {
-          x: 0,
-          force3D: true,
-        });
+      const setupScroll = (
+        minWidth: number,
+        maxWidth: number | null,
+        viewportFactor: number,
+        scrub: number
+      ) => {
+        const query =
+          maxWidth === null
+            ? `(min-width: ${minWidth}px)`
+            : `(min-width: ${minWidth}px) and (max-width: ${maxWidth}px)`;
 
-        gsap.to(element, {
-          x: -extra,
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: () =>
-              `+=${extra + window.innerHeight * 0.35}`,
-            scrub: 0.7,
-            pin: false,
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-            fastScrollEnd: true,
-          },
-        });
-      });
-
-      // Tablet
-      mm.add(
-        "(min-width: 640px) and (max-width: 1023px)",
-        () => {
+        mm.add(query, () => {
           gsap.set(element, {
             x: 0,
             force3D: true,
@@ -410,54 +405,28 @@ export default function GallerySection() {
               trigger: section,
               start: "top top",
               end: () =>
-                `+=${extra + window.innerHeight * 0.25}`,
-              scrub: 0.55,
+                `+=${extra + window.innerHeight * viewportFactor}`,
+              scrub,
               pin: false,
               invalidateOnRefresh: true,
-              anticipatePin: 1,
               fastScrollEnd: true,
             },
           });
-        }
-      );
-
-      // Mobile
-      mm.add("(max-width: 639px)", () => {
-        gsap.set(element, {
-          x: 0,
-          force3D: true,
         });
-
-        gsap.to(element, {
-          x: -extra,
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: () =>
-              `+=${extra + window.innerHeight * 0.18}`,
-            scrub: 0.35,
-            pin: false,
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-            fastScrollEnd: true,
-          },
-        });
-      });
-
-      return () => {
-        mm.revert();
       };
+
+      setupScroll(1024, null, 0.35, 0.7);
+      setupScroll(640, 1023, 0.25, 0.55);
+      setupScroll(0, 639, 0.18, 0.35);
+
+      return () => mm.revert();
     }, section);
 
-    return () => {
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, [extra]);
 
   /* =======================================================
-     REFRESH SCROLLTRIGGER AFTER MEASUREMENT CHANGES
+     REFRESH AFTER MEASUREMENT CHANGES
   ======================================================= */
 
   useLayoutEffect(() => {
@@ -492,8 +461,7 @@ export default function GallerySection() {
       style={{ height: sectionHeight }}
     >
       <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden">
-        {/* TOP FILM BAND */}
-
+        {/* Top film band */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 z-30 h-9 border-b border-[#f7ead7]/10 bg-[#080304] sm:h-10"
@@ -503,8 +471,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* BOTTOM FILM BAND */}
-
+        {/* Bottom film band */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-9 border-t border-[#f7ead7]/10 bg-[#080304] sm:h-10"
@@ -514,8 +481,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* BACKGROUND GLOW */}
-
+        {/* Background glow */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -534,14 +500,12 @@ export default function GallerySection() {
           }}
         />
 
-        {/* FILMSTRIP */}
-
+        {/* Filmstrip */}
         <div
           ref={track}
           className="relative z-10 flex w-max items-center gap-6 pl-[7vw] pr-[14vw] will-change-transform transform-gpu sm:gap-9 sm:pl-[7vw] sm:pr-[15vw] md:gap-12 lg:gap-16"
         >
-          {/* INTRO PANEL */}
-
+          {/* Intro panel */}
           <div className="w-[78vw] shrink-0 sm:w-[58vw] md:w-[38vw] lg:w-[31vw]">
             <p className="font-latin text-[8px] uppercase tracking-[0.5em] text-[#d8ad55]/80 sm:text-[9px]">
               Our Memories
@@ -569,8 +533,7 @@ export default function GallerySection() {
             </p>
           </div>
 
-          {/* GALLERY IMAGES */}
-
+          {/* Gallery images */}
           {images.map((image, index) => (
             <FilmFrame
               key={`${image.src}-${index}`}
@@ -580,8 +543,7 @@ export default function GallerySection() {
             />
           ))}
 
-          {/* END PANEL */}
-
+          {/* End panel */}
           <div className="flex w-[72vw] shrink-0 flex-col items-center justify-center sm:w-[52vw] md:w-[32vw]">
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#d8ad55] to-transparent" />
 
@@ -599,8 +561,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* PREVIOUS / NEXT ARROWS */}
-
+        {/* Previous / next buttons */}
         {images.length > 0 && (
           <div className="pointer-events-none absolute inset-x-3 bottom-28 z-40 flex items-center justify-between sm:inset-x-6 sm:bottom-32 md:inset-x-8">
             <button
@@ -609,7 +570,7 @@ export default function GallerySection() {
               disabled={currentImage === 0}
               aria-label="Previous image"
               title="Previous image"
-              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#d8ad55]/60 bg-[#080304]/80 text-[#f0d38a] shadow-lg backdrop-blur-md transition hover:border-[#f0d38a] hover:bg-[#d8ad55]/15 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:h-11 sm:w-11"
+              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#d8ad55]/60 bg-[#080304]/80 text-[#f0d38a] shadow-lg transition hover:border-[#f0d38a] hover:bg-[#d8ad55]/15 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:h-11 sm:w-11"
             >
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -624,7 +585,7 @@ export default function GallerySection() {
               disabled={currentImage >= images.length - 1}
               aria-label="Next image"
               title="Next image"
-              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#d8ad55]/60 bg-[#080304]/80 text-[#f0d38a] shadow-lg backdrop-blur-md transition hover:border-[#f0d38a] hover:bg-[#d8ad55]/15 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:h-11 sm:w-11"
+              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#d8ad55]/60 bg-[#080304]/80 text-[#f0d38a] shadow-lg transition hover:border-[#f0d38a] hover:bg-[#d8ad55]/15 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:h-11 sm:w-11"
             >
               <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>

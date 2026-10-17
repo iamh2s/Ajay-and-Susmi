@@ -14,19 +14,17 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
-  const [audioReady, setAudioReady] = useState(false);
+  const [userTurnedOff, setUserTurnedOff] = useState(false);
 
-  // Start music when the invitation opens.
+  // Start music, loading the audio only when needed.
   const startMusic = useCallback(async (restart = false) => {
     const audio = audioRef.current;
     if (!audio) return;
 
     try {
-      // Assign the source only when music is needed.
-      if (!audio.src || audio.getAttribute("src") === null) {
+      if (!audio.getAttribute("src")) {
         audio.src = data.music.src || "/images/music.mp3";
         audio.load();
-        setAudioReady(true);
       }
 
       if (restart) {
@@ -36,15 +34,53 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
       await audio.play();
       setUnavailable(false);
     } catch (error) {
-      // Browsers can block autoplay until the visitor interacts.
-      console.info("Wedding music could not start automatically:", error);
       setPlaying(false);
+      setUnavailable(true);
+      console.info("Wedding music could not start automatically:", error);
     }
   }, []);
 
+  // Stop playback. Optionally reset the song to the beginning.
+  const stopMusic = useCallback((reset = true) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+
+    if (reset) {
+      try {
+        audio.currentTime = 0;
+      } catch {
+        // Audio may not have loaded yet.
+      }
+    }
+
+    setPlaying(false);
+  }, []);
+
+  // Start when the invitation opens; stop when it closes.
+  useEffect(() => {
+    if (!opened) {
+      setUserTurnedOff(false);
+      stopMusic(true);
+      return;
+    }
+
+    if (!userTurnedOff) {
+      void startMusic(true);
+    }
+
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [opened, userTurnedOff, startMusic, stopMusic]);
+
+  // Handle the existing wedding:open event without overriding manual off.
   useEffect(() => {
     const handleWeddingOpen = () => {
-      void startMusic(true);
+      if (opened && !userTurnedOff) {
+        void startMusic(true);
+      }
     };
 
     window.addEventListener("wedding:open", handleWeddingOpen);
@@ -52,7 +88,48 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
     return () => {
       window.removeEventListener("wedding:open", handleWeddingOpen);
     };
-  }, [startMusic]);
+  }, [opened, userTurnedOff, startMusic]);
+
+  // Stop while the page is hidden; resume only if the user did not turn music off.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopMusic(true);
+      } else if (opened && !userTurnedOff) {
+        void startMusic();
+      }
+    };
+
+    const handlePageHide = () => {
+      stopMusic(true);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, [opened, userTurnedOff, startMusic, stopMusic]);
+
+  // Keep the manual choice until the user explicitly turns music back on.
+  const toggle = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!audio.paused) {
+      setUserTurnedOff(true);
+      stopMusic(false);
+      return;
+    }
+
+    setUserTurnedOff(false);
+    await startMusic();
+  };
 
   const handlePlay = () => {
     setPlaying(true);
@@ -66,27 +143,16 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
   const handleError = () => {
     setPlaying(false);
     setUnavailable(true);
-    console.error("Unable to load wedding music:", data.music.src);
-  };
-
-  // Turn music on or off.
-  const toggle = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (!audio.paused) {
-      audio.pause();
-      return;
-    }
-
-    await startMusic();
+    console.error(
+      "Unable to load wedding music:",
+      data.music.src || "/images/music.mp3"
+    );
   };
 
   return (
     <>
       <audio
         ref={audioRef}
-        src={undefined}
         loop
         preload="none"
         onPlay={handlePlay}
@@ -95,6 +161,7 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
       />
 
       <div
+        data-guide="music"
         className={cn(
           `
           fixed bottom-4 left-4 z-[9998]
@@ -107,6 +174,7 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
             : "pointer-events-none translate-y-4 opacity-0"
         )}
       >
+        {/* Round music button */}
         <button
           type="button"
           onClick={toggle}
@@ -116,7 +184,7 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
           className={cn(
             `
             relative flex h-12 w-12 shrink-0 items-center justify-center
-            rounded-full border backdrop-blur-md transition-all duration-300
+            rounded-full border transition-all duration-300
             active:scale-95 sm:h-[52px] sm:w-[52px]
             `,
             playing
@@ -155,12 +223,16 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
           )}
 
           {playing ? (
-            <Pause className="h-5 w-5 fill-current" aria-hidden="true" />
+            <Pause
+              className="h-5 w-5 fill-current"
+              aria-hidden="true"
+            />
           ) : (
             <Music className="h-5 w-5" aria-hidden="true" />
           )}
         </button>
 
+        {/* Music status and second toggle button */}
         <button
           type="button"
           onClick={toggle}
@@ -170,7 +242,7 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
             flex min-h-10 min-w-0 items-center gap-2 rounded-full
             border border-gold/30 bg-maroon-deep/90 px-3 py-2
             text-left text-[11px] font-semibold leading-tight text-ivory
-            shadow-lg backdrop-blur-md transition-colors
+            shadow-lg transition-colors
             hover:border-gold-light/70 sm:px-4 sm:text-xs
           "
         >
@@ -182,9 +254,9 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
             className="flex h-3.5 shrink-0 items-end gap-[2px]"
             aria-hidden="true"
           >
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2].map((index) => (
               <span
-                key={i}
+                key={index}
                 className={cn(
                   "w-[2px] rounded-full bg-gold-light",
                   playing ? "eq-bar" : "h-[3px]"
@@ -193,7 +265,7 @@ export default function MusicPlayer({ opened }: MusicPlayerProps) {
                   playing
                     ? {
                         height: "100%",
-                        animationDelay: `${i * 0.18}s`,
+                        animationDelay: `${index * 0.18}s`,
                       }
                     : undefined
                 }

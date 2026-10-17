@@ -27,13 +27,11 @@ const item = {
   hidden: {
     opacity: 0,
     y: 26,
-    filter: "blur(6px)",
   },
 
   show: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
       duration: 0.9,
       ease: [0.22, 1, 0.36, 1] as const,
@@ -140,10 +138,8 @@ export default function HeroSection({
             object-cover
           "
           style={{
+            // Keep the hero image crisp and avoid an extra blur/filter pass.
             objectPosition: "center 0%",
-            filter: "blur(1px)",
-            transform: "scale(1.02)",
-            marginTop: "1px",
           }}
         />
       </motion.div>
@@ -225,7 +221,7 @@ export default function HeroSection({
           FLOATING PETALS
       ===================================================== */}
 
-      <Petals count={100} />
+      <Petals count={35} />
 
       {/* =====================================================
           HERO CONTENT
