@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowDown,
   ArrowLeft,
@@ -38,8 +37,7 @@ const STEPS = [
     title: "Contact Button",
     tamil: "தொடர்பு பொத்தான்",
     text: "Tap the contact button to view the contact options and get in touch with us.",
-    textTamil:
-      "தொடர்பு விவரங்களைக் காண தொடர்பு பொத்தானைத் தொடவும்.",
+    textTamil: "தொடர்பு விவரங்களைக் காண தொடர்பு பொத்தானைத் தொடவும்.",
   },
   {
     icon: Music,
@@ -68,6 +66,172 @@ type Rect = {
   height: number;
 };
 
+const RING_RADIUS = 21;
+const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
+
+/* ------------------------------------------------------------------ */
+/* Index-finger swipe hand (drawn in code)                             */
+/* ------------------------------------------------------------------ */
+
+function SwipeHand({
+  flipped,
+  reduce,
+}: {
+  flipped: boolean;
+  reduce: boolean | null;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex h-10 w-10 items-center justify-center"
+      style={{
+        transform: flipped ? "rotate(180deg)" : undefined,
+        transition: "transform 0.4s ease",
+      }}
+    >
+      <motion.svg
+        viewBox="0 0 48 48"
+        width={36}
+        height={36}
+        fill="none"
+        stroke="#f0d99e"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        animate={reduce ? undefined : { y: [6, -6, 6] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        {/* Ripple at the fingertip */}
+        {!reduce && (
+          <motion.circle
+            cx={22.5}
+            cy={5}
+            fill="none"
+            stroke="#e9cc85"
+            strokeWidth={1}
+            animate={{ r: [2, 9], opacity: [0.8, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+          />
+        )}
+
+        {/* Raised index finger */}
+        <path
+          d="M19 26V10.5a3.5 3.5 0 0 1 7 0V26"
+          fill="#f0d99e"
+          fillOpacity={0.15}
+        />
+
+        {/* Curled middle, ring and little fingers */}
+        <path d="M26 21h3a3 3 0 0 1 3 3v3" />
+        <path d="M26 21v6" opacity={0.6} />
+        <path d="M30.5 24v4" opacity={0.6} />
+
+        {/* Closed fist and tucked thumb */}
+        <path d="M19 26l-5-2.2c-1.3-.5-2.5.4-2.3 1.8.2 1.2 1 2.2 2.2 2.9L19 35" />
+        <path d="M19 35c0 2.5 1.8 4 4.5 4H30c3.3 0 5.5-2.2 5.5-5.5V27" />
+      </motion.svg>
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll cue: progress ring + swipe hand                              */
+/* ------------------------------------------------------------------ */
+
+function ScrollCue() {
+  const reduce = useReducedMotion();
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
+
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
+
+  const atEnd = progress >= 0.97;
+
+  return (
+    <div className="flex items-center gap-3 rounded-full border border-[#d9bb79]/60 bg-[#2d0913]/85 py-2 pl-2 pr-5 shadow-xl backdrop-blur-md">
+      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+        {/* Pulse ring */}
+        {!reduce && (
+          <motion.span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full border border-[#e9cc85]/70"
+            animate={{ scale: [1, 1.35], opacity: [0.6, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+          />
+        )}
+
+        {/* Progress ring */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 48 48"
+          className="absolute inset-0 -rotate-90"
+        >
+          <circle
+            cx="24"
+            cy="24"
+            r={RING_RADIUS}
+            fill="none"
+            stroke="#e9cc85"
+            strokeOpacity="0.2"
+            strokeWidth="2"
+          />
+          <circle
+            cx="24"
+            cy="24"
+            r={RING_RADIUS}
+            fill="none"
+            stroke="#e9cc85"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeDasharray={RING_LENGTH}
+            strokeDashoffset={RING_LENGTH * (1 - progress)}
+            style={{ transition: "stroke-dashoffset 0.3s linear" }}
+          />
+        </svg>
+
+        <SwipeHand flipped={atEnd} reduce={reduce} />
+      </div>
+
+      <div className="flex flex-col items-start text-left leading-tight">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#f0d99e] sm:text-xs">
+          {atEnd ? "Back to Top" : "Scroll Down"}
+        </p>
+        <p
+          lang="ta"
+          className="mt-0.5 text-xs font-medium text-[#fff4dd] sm:text-sm"
+        >
+          {atEnd ? "மேலே செல்லுங்கள்" : "கீழே ஸ்க்ரோல் செய்யுங்கள்"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Guide                                                               */
+/* ------------------------------------------------------------------ */
+
 export default function Guide() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -82,18 +246,20 @@ export default function Guide() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Find and highlight the target element
+  // Find and highlight the target element.
+  // Uses scroll/resize listeners with rAF throttling instead of setInterval.
   useEffect(() => {
     if (!open) return;
 
     const selector = STEPS[step].target;
+    let frame = 0;
 
     const measure = () => {
+      frame = 0;
+
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const el = selector
-        ? document.querySelector(selector)
-        : null;
+      const el = selector ? document.querySelector(selector) : null;
 
       if (!el) {
         setRect(null);
@@ -139,16 +305,24 @@ export default function Guide() {
       );
     };
 
-    measure();
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(measure);
+    };
 
-    const interval = window.setInterval(measure, 250);
-    window.addEventListener("resize", measure);
-    window.addEventListener("orientationchange", measure);
+    measure();
+    // Re-measure once after layout and fonts settle
+    const settle = window.setTimeout(schedule, 400);
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("orientationchange", schedule);
 
     return () => {
-      window.clearInterval(interval);
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("orientationchange", measure);
+      window.clearTimeout(settle);
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("orientationchange", schedule);
     };
   }, [open, step]);
 
@@ -178,7 +352,7 @@ export default function Guide() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, step]);
 
-  // Hide scroll hint after scrolling or after eight seconds
+  // Keep the scroll cue after the guide closes until the user scrolls or 8s pass
   useEffect(() => {
     if (!hintAfterClose) return;
 
@@ -188,10 +362,7 @@ export default function Guide() {
       }
     };
 
-    const timer = window.setTimeout(
-      () => setHintAfterClose(false),
-      8000
-    );
+    const timer = window.setTimeout(() => setHintAfterClose(false), 8000);
 
     window.addEventListener("scroll", hide, { passive: true });
 
@@ -206,33 +377,20 @@ export default function Guide() {
     setOpen(false);
   };
 
-  const next = () =>
-    isLast ? close() : setStep((s) => s + 1);
+  const next = () => (isLast ? close() : setStep((s) => s + 1));
 
-  const back = () =>
-    setStep((s) => Math.max(s - 1, 0));
+  const back = () => setStep((s) => Math.max(s - 1, 0));
 
-  const {
-    icon: Icon,
-    title,
-    tamil,
-    text,
-    textTamil,
-  } = STEPS[step];
+  const { icon: Icon, title, tamil, text, textTamil } = STEPS[step];
 
   const showScrollHint = (open && isLast) || hintAfterClose;
 
   // Point the arrow toward the highlighted target
-  const arrowPointsLeft = rect
-    ? rect.left < window.innerWidth / 2
-    : false;
+  const arrowPointsLeft = rect ? rect.left < window.innerWidth / 2 : false;
 
   const arrowLeft = rect
     ? arrowPointsLeft
-      ? Math.min(
-          rect.left + rect.width + 5,
-          window.innerWidth - 40
-        )
+      ? Math.min(rect.left + rect.width + 5, window.innerWidth - 40)
       : Math.max(rect.left - 40, 4)
     : 0;
 
@@ -257,8 +415,7 @@ export default function Guide() {
                   left: rect.left,
                   width: rect.width,
                   height: rect.height,
-                  boxShadow:
-                    "0 0 0 9999px rgba(29,5,13,0.78)",
+                  boxShadow: "0 0 0 9999px rgba(29,5,13,0.78)",
                 }}
               />
             ) : (
@@ -278,8 +435,7 @@ export default function Guide() {
                 sm:pr-[max(24px,env(safe-area-inset-right))]
               "
               style={{
-                paddingTop:
-                  "max(16px, env(safe-area-inset-top))",
+                paddingTop: "max(16px, env(safe-area-inset-top))",
                 paddingBottom: isLast
                   ? "max(112px, env(safe-area-inset-bottom))"
                   : "max(16px, env(safe-area-inset-bottom))",
@@ -328,17 +484,12 @@ export default function Guide() {
                 </div>
 
                 {/* Progress */}
-                <div
-                  className="mb-4 flex gap-1.5"
-                  aria-hidden="true"
-                >
+                <div className="mb-4 flex gap-1.5" aria-hidden="true">
                   {STEPS.map((_, i) => (
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                        i <= step
-                          ? "bg-[#e8cb86]"
-                          : "bg-[#e8cb86]/20"
+                        i <= step ? "bg-[#e8cb86]" : "bg-[#e8cb86]/20"
                       }`}
                     />
                   ))}
@@ -453,8 +604,7 @@ export default function Guide() {
                     left: rect.left,
                     width: rect.width,
                     height: rect.height,
-                    boxShadow:
-                      "0 0 30px rgba(233,204,133,0.5)",
+                    boxShadow: "0 0 30px rgba(233,204,133,0.5)",
                   }}
                 >
                   <div className="absolute inset-0 animate-pulse rounded-3xl border-2 border-[#e9cc85]" />
@@ -498,7 +648,7 @@ export default function Guide() {
         )}
       </AnimatePresence>
 
-      {/* Scroll hint */}
+      {/* Scroll cue */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
@@ -510,36 +660,9 @@ export default function Guide() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="flex flex-col items-center gap-1.5 rounded-full border border-[#d9bb79]/60 bg-[#2d0913]/85 px-5 py-2.5 text-center shadow-xl backdrop-blur-md sm:px-6 sm:py-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#f0d99e] sm:text-xs">
-                Scroll Down
-              </p>
-
-              <p
-                lang="ta"
-                className="text-xs font-medium text-[#fff4dd] sm:text-sm"
-              >
-                கீழே ஸ்க்ரோல் செய்யுங்கள்
-              </p>
-
-              <motion.span
-                className="
-                  flex h-8 w-8 items-center justify-center
-                  rounded-full border border-[#e9cc85]
-                  bg-[#e9cc85]/15 text-[#f0d99e]
-                "
-                animate={{ y: [0, 7, 0] }}
-                transition={{
-                  duration: 1.2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <ArrowDown size={16} strokeWidth={2} />
-              </motion.span>
-            </div>
+            <ScrollCue />
           </motion.div>
         )}
       </AnimatePresence>
