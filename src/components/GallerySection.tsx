@@ -1,4 +1,3 @@
-
 import {
   useCallback,
   useEffect,
@@ -7,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import { ArrowLeft, ArrowRight, Heart } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, Heart } from "lucide-react";
 import { gsap } from "../lib/gsap";
 import data from "@/data/weddingData.json";
 import { GoldDivider } from "./decor";
@@ -16,6 +15,21 @@ import { cn } from "@/utils/cn";
 type GalleryImage = {
   src: string;
   alt: string;
+};
+
+/* =========================================================
+   HINT TEXT (English + Tamil)
+========================================================= */
+
+const hintText = {
+  start: {
+    en: "Scroll down to move sideways",
+    ta: "கீழே ஸ்க்ரோல் செய்யவும், பக்கவாட்டில் நகரும்",
+  },
+  next: {
+    en: "Scroll down to go to the next section",
+    ta: "அடுத்த பகுதிக்குச் செல்ல கீழே ஸ்க்ரோல் செய்யவும்",
+  },
 };
 
 /* =========================================================
@@ -34,6 +48,72 @@ function FilmHoles() {
           className="h-[5px] w-[11px] shrink-0 rounded-[2px] bg-[#f4e7cf]/10 sm:h-[6px] sm:w-[14px] md:h-[7px] md:w-[16px]"
         />
       ))}
+    </div>
+  );
+}
+
+/* =========================================================
+   HINT PILL (shared by start and end hints)
+========================================================= */
+
+function HintPill({
+  en,
+  ta,
+  className,
+}: {
+  en: string;
+  ta: string;
+  className?: string;
+}) {
+  return (
+    <div
+      role="note"
+      className={cn(
+        "relative flex w-fit max-w-full flex-col items-center",
+        "gap-0.5 rounded-xl border border-[#d8ad55]/60 bg-[#080304]/85 px-3 py-1.5",
+        "shadow-[0_0_20px_-8px_rgba(216,173,85,0.45)]",
+        "sm:gap-1 sm:px-5 sm:py-2 md:px-6",
+        className
+      )}
+    >
+      {/* Pulsing dot */}
+      <span className="absolute -left-1 -top-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d8ad55]/60" />
+        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#f0d38a] sm:h-3 sm:w-3" />
+      </span>
+
+      <p className="text-center font-latin text-[9px] font-medium uppercase leading-snug tracking-[0.18em] text-[#f0d38a] sm:text-[11px] sm:tracking-[0.22em] md:text-xs">
+        {en}
+      </p>
+
+      <p
+        lang="ta"
+        className="text-center text-[10px] leading-snug tracking-[0.02em] text-[#f7ead7]/85 sm:text-xs md:text-sm"
+        style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}
+      >
+        {ta}
+      </p>
+
+      <ArrowDown className="mt-0.5 h-3 w-3 animate-bounce text-[#d8ad55] sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+    </div>
+  );
+}
+
+/* =========================================================
+   START HINT (above the frames, fades after first image)
+========================================================= */
+
+function ScrollHint({ visible }: { visible: boolean }) {
+  return (
+    <div
+      className={cn(
+        "relative z-20 flex w-full justify-center px-4",
+        "pt-11 pb-2 sm:pt-12 sm:pb-4 md:pt-14 md:pb-6",
+        "transition-opacity duration-500",
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      )}
+    >
+      <HintPill en={hintText.start.en} ta={hintText.start.ta} />
     </div>
   );
 }
@@ -500,6 +580,11 @@ export default function GallerySection() {
           }}
         />
 
+        {/* Start hint above the frames */}
+        {images.length > 0 && (
+          <ScrollHint visible={currentImage === 0} />
+        )}
+
         {/* Filmstrip */}
         <div
           ref={track}
@@ -544,10 +629,10 @@ export default function GallerySection() {
           ))}
 
           {/* End panel */}
-          <div className="flex w-[72vw] shrink-0 flex-col items-center justify-center sm:w-[52vw] md:w-[32vw]">
+          <div className="flex w-[72vw] shrink-0 flex-col items-center justify-center gap-5 sm:w-[52vw] sm:gap-6 md:w-[32vw]">
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#d8ad55] to-transparent" />
 
-            <p className="mt-6 max-w-sm text-center font-latin text-[clamp(1.4rem,3vw,2.2rem)] font-light italic leading-snug text-[#f7ead7]/70">
+            <p className="max-w-sm text-center font-latin text-[clamp(1.4rem,3vw,2.2rem)] font-light italic leading-snug text-[#f7ead7]/70">
               And the most beautiful{" "}
               <Heart
                 aria-hidden="true"
@@ -557,7 +642,14 @@ export default function GallerySection() {
               memories are still being made.
             </p>
 
-            <div className="mt-6 h-px w-16 bg-gradient-to-r from-transparent via-[#d8ad55] to-transparent" />
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#d8ad55] to-transparent" />
+
+            {/* Next-section hint */}
+            <HintPill
+              en={hintText.next.en}
+              ta={hintText.next.ta}
+              className="max-w-[90%]"
+            />
           </div>
         </div>
 
